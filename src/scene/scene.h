@@ -250,8 +250,9 @@ public:
     TransformRoot transformRoot;
 
 public:
-	Scene() 
-		: transformRoot(), objects(), lights() {}
+	Scene()
+		: transformRoot(), objects(), lights() {
+	};
 	virtual ~Scene();
 
 	void add( Geometry* obj )
@@ -269,7 +270,6 @@ public:
 	list<Light*>::const_iterator endLights() const { return lights.end(); }
         
 	Camera *getCamera() { return &camera; }
-
 	
 
 private:

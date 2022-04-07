@@ -28,6 +28,10 @@ public:
 
 	Fl_Slider*			m_sizeSlider;
 	Fl_Slider*			m_depthSlider;
+	Fl_Slider*			m_conDASlider;
+	Fl_Slider*			m_linDASlider;
+	Fl_Slider*			m_quaDASlider;
+	Fl_Slider*			m_DistScaleSlider;
 
 	Fl_Button*			m_renderButton;
 	Fl_Button*			m_stopButton;
@@ -41,12 +45,16 @@ public:
 
 	int			getSize();
 	int			getDepth();
+	double*		getDACoeff() {return m_nDACoeff;}
+	double		getDistScale() { return m_nDistScale; }
 
 private:
 	RayTracer*	raytracer;
 
 	int			m_nSize;
 	int			m_nDepth;
+	double		m_nDACoeff[3];
+	double		m_nDistScale;
 
 // static class members
 	static Fl_Menu_Item menuitems[];
@@ -62,6 +70,10 @@ private:
 
 	static void cb_sizeSlides(Fl_Widget* o, void* v);
 	static void cb_depthSlides(Fl_Widget* o, void* v);
+	static void cb_conDASlides(Fl_Widget* o, void* v);
+	static void cb_linDASlides(Fl_Widget* o, void* v);
+	static void cb_quaDASlides(Fl_Widget* o, void* v);
+	static void cb_DistScaleSlides(Fl_Widget* o, void* v);
 
 	static void cb_render(Fl_Widget* o, void* v);
 	static void cb_stop(Fl_Widget* o, void* v);

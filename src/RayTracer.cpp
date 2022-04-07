@@ -28,19 +28,26 @@ vec3f RayTracer::traceRay( Scene *scene, const ray& r,
 	isect i;
 
 	if( scene->intersect( r, i ) ) {
-		// YOUR CODE HERE
-
 		// An intersection occured!  We've got work to do.  For now,
 		// this code gets the material for the surface that was intersected,
 		// and asks that material to provide a color for the ray.  
-
+		//
 		// This is a great place to insert code for recursive ray tracing.
 		// Instead of just returning the result of shade(), add some
 		// more steps: add in the contributions from reflected and refracted
 		// rays.
+		// 
+		// YOUR CODE HERE
+		vec3f I_result(0, 0, 0); //(0,0,0) += shade, then += kr*reflection, then += kt*refraction, then = result
 
+		// Shading
 		const Material& m = i.getMaterial();
-		return m.shade(scene, r, i);
+		I_result += m.shade(scene, r, i);
+
+		// Reflection and Refraction
+
+		thresh; // 干什么用的？
+		return I_result;
 	
 	} else {
 		// No intersection.  This ray travels to infinity, so we color
