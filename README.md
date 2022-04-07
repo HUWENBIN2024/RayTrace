@@ -18,43 +18,43 @@
 
 ### UST COMP4411
 
-[W] Adaptive Termination Condition Based on Ray Contribution {457}
+[W] Adaptive Termination Condition Based on Ray Contribution
 
-[W+W] Antialiasing by Supersampling and Averaging Down {457}; +Jittering{457}
+[W+W] Antialiasing by Supersampling and Averaging Down; +Jittering
 
-[B] Spot Light 聚光灯 {457}
+[B] Spot Light 聚光灯
 
 [B] Background Image 背景图片 {[2B] 457 升级版: Background Image Box}
 
-[B] Accelarate Shadow Attenuation {457}
+[B] Accelarate Shadow Attenuation
 
-[B] Overlapping Objects (in Refraction) {457}
+[B] Overlapping Objects (in Refraction)
 
-[BW+?] Texture Mapping; +Additional Mapping; +Mapping on Trimeshes
+[BW+?] Texture Mapping; +Additional Mapping; +Mapping on Trimeshes {457没有}
 
-[BW] Antialiasing by Adaptive Supersampling {457}
+[BW] Antialiasing by Adaptive Supersampling
 
-[BW] More Lighting Control e.g. Warn Model
+[BW] More Lighting Control e.g. Warn Model {457没有}
 
-[2B] Bump Mapping 凹凸贴图 {457}
+[2B] Bump Mapping 凹凸贴图
 
-[2B] Solid Textures 三维纹理 {457}
+[2B] Solid Textures 三维纹理
 
-[2B] New Types of Geometry e.g. Torus, Quadric 二次方表面 {457}
+[2B] New Types of Geometry e.g. Torus, Quadric 二次方表面
 
-[2B+4BW] Height Field; +depth of field, +soft shadows, +motion blur, +glossy reflection {[2B+4x2B+?] 457 升级版: Monte Carlo Path Tracing; +Stratified Sampling(分层抽样)}
+[2B+4BW] Height Field {457没有}; +depth of field, +soft shadows, +motion blur, +glossy reflection {[2B+4x2B+?] 457 升级版: Monte Carlo Path Tracing; +Stratified Sampling(分层抽样)}
 
 [3B] Higher Level Geometry (不能用多边形近似) {[3B+B] 457 +TextureMap on Metaball}
 
-[3B] Ray Intersection Optimization. E.g. BSP Tree, Hierachical Bounding Volumes {457}
+[3B] Ray Intersection Optimization. E.g. BSP Tree, Hierachical Bounding Volumes
 
 [4B+/-] More Realistic Shading Model {[2B] 457}
 
-[4B] Constructive Solid Geometry {457}
+[4B] Constructive Solid Geometry
 
-[4B] Particle Systems Simulation & Renderer
+[4B] Particle Systems Simulation & Renderer {457没有(这不应该是Animator里面的吗)}
 
-[4B] Caustics {457}
+[4B] Caustics
 
 ----------------------------------------------------------------------------
 
