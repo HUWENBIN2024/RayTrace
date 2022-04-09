@@ -1,6 +1,7 @@
 // The main ray tracer.
 
 #include <Fl/fl_ask.h>
+#include <time.h>
 
 #include "RayTracer.h"
 #include "scene/light.h"
@@ -8,6 +9,9 @@
 #include "scene/ray.h"
 #include "fileio/read.h"
 #include "fileio/parse.h"
+#include "ui/TraceUI.h"
+
+extern TraceUI* traceUI;
 
 // Trace a top-level ray through normalized window coordinates (x,y)
 // through the projection plane, and out into the scene.  All we do is
@@ -63,6 +67,7 @@ RayTracer::RayTracer()
 	buffer = NULL;
 	buffer_width = buffer_height = 256;
 	scene = NULL;
+	aalmode = NONE;
 
 	m_bSceneLoaded = false;
 }
@@ -152,19 +157,105 @@ void RayTracer::traceLines( int start, int stop )
 
 void RayTracer::tracePixel( int i, int j )
 {
-	vec3f col;
+	vec3f col(0,0,0);
 
 	if( !scene )
 		return;
 
-	double x = double(i)/double(buffer_width);
-	double y = double(j)/double(buffer_height);
+	srand((unsigned)time(0));
 
-	col = trace( scene,x,y );
+	switch (aalmode) {
+	case NONE: {
+		double x = double(i) / double(buffer_width);
+		double y = double(j) / double(buffer_height);
+		col = trace(scene, x, y);
+		break;
+	}
+	case SUPER: { // 不取中心点，取左下的点，毕竟case NONE也是这么干的
+		double x0 = double(i) / double(buffer_width);
+		double y0 = double(j) / double(buffer_height);
+		int numSubPixels = traceUI->getSubPixels();
+		double xdelta = 1 / double(buffer_width) / numSubPixels;
+		double ydelta = 1 / double(buffer_height) / numSubPixels;
+		double x[5] = { 0 }; double y[5] = { 0 };
+		for (int i = 0; i < numSubPixels; ++i) {
+			x[i] = x0 + i * xdelta;
+			y[i] = y0 + i * ydelta;
+		}
+		for (int j = 0; j < numSubPixels; ++j) {
+			for (int i = 0; i < numSubPixels; ++i) {
+				col += trace(scene, x[i], y[j]) / pow(numSubPixels, 2);
+			}
+		}
+		break;
+	}
+	case SUPER_JITTER: {
+		double x0 = double(i) / double(buffer_width);
+		double y0 = double(j) / double(buffer_height);
+		int numSubPixels = traceUI->getSubPixels();
+		double xdelta = 1 / double(buffer_width) / numSubPixels;
+		double ydelta = 1 / double(buffer_height) / numSubPixels;
+		for (int j = 0; j < numSubPixels; ++j) {
+			for (int i = 0; i < numSubPixels; ++i) {
+				double xi = x0 + (i + (rand() % 500) / 500) * xdelta;
+				double yj = y0 + (j + (rand() % 500) / 500) * ydelta;
+				col += trace(scene, xi, yj);
+			}
+		}
+		col /= pow(numSubPixels, 2);
+		break;
+	}
+	case ADAPTIVE: {
+		double x0 = double(i) / double(buffer_width);
+		double y0 = double(j) / double(buffer_height);
+		int numSubPixels = traceUI->getSubPixels() + 1; // If numSubPixels = 1, then we cannot do subdivide, so we do +1.
+		double xdelta = 1 / double(buffer_width);
+		double ydelta = 1 / double(buffer_height);
+		double coords[4] = { x0, y0, x0 + xdelta, y0 + ydelta };
+		int recursion_depth = 0;
+		col = traceSubPixel(coords, numSubPixels, recursion_depth);
+	}
+	}
 
 	unsigned char *pixel = buffer + ( i + j * buffer_width ) * 3;
 
 	pixel[0] = (int)( 255.0 * col[0]);
 	pixel[1] = (int)( 255.0 * col[1]);
 	pixel[2] = (int)( 255.0 * col[2]);
+}
+
+vec3f RayTracer::traceSubPixel(double* coords, int numSubPixels, int &depth) { // coords: {x0, y0, x0+dx, y0+dx}
+	vec3f c[4]; // color of leftlower, rightlower, leftupper, rightupper
+	c[0] = trace(scene, coords[0], coords[1]);
+	c[1] = trace(scene, coords[2], coords[1]);
+	c[2] = trace(scene, coords[0], coords[3]);
+	c[3] = trace(scene, coords[2], coords[3]);
+	// Compute max difference of 3 channels
+	vec3f Max(0, 0, 0), Min(999, 999, 999);
+	for (int i = 0; i < 4; ++i) {
+		for (int a = 0; a < 3; ++a) {
+			Max[a] = max(Max[a], c[i][a]);
+			Min[a] = min(Min[a], c[i][a]);
+		}
+	}
+	vec3f diff = Max - Min;
+	double diffrgb = diff[0] + diff[1] + diff[2]; // sum of 3 channels
+	if (diffrgb <= 3.0/256 || depth >= 5) { // 四角同色 (diffrgb < some threshold epsilon), 或递归太深
+		return (c[0] + c[1] + c[2] + c[3]) / 4;
+	}
+	else {
+		double dx = (coords[2] - coords[0]) / numSubPixels;
+		double dy = (coords[3] - coords[1]) / numSubPixels;
+		vec3f result(0, 0, 0);
+		++depth;
+		for (int j = 0; j < numSubPixels; ++j) {
+			for (int i = 0; i < numSubPixels; ++i) {
+				double subCoords[4] = { coords[0] + i * dx, coords[1] + j * dy, coords[0] + (i + 1) * dx, coords[1] + (j + 1) * dy };
+				result += traceSubPixel(subCoords, numSubPixels, depth);
+			}
+		}
+		--depth;
+		result /= pow(numSubPixels, 2);
+		return result;
+	}
 }

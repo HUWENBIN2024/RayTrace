@@ -20,7 +20,7 @@
 
 [W] Adaptive Termination Condition Based on Ray Contribution
 
-[W+W] Antialiasing by Supersampling and Averaging Down; +Jittering
+[W+W] Antialiasing by Supersampling and Averaging Down; +Jittering 完成
 
 [B] Spot Light 聚光灯
 
@@ -32,7 +32,7 @@
 
 [BW+?] Texture Mapping; +Additional Mapping; +Mapping on Trimeshes {457没有}
 
-[BW] Antialiasing by Adaptive Supersampling
+[BW] Antialiasing by Adaptive Supersampling 完成
 
 [BW] More Lighting Control e.g. Warn Model {457没有}
 
@@ -44,7 +44,7 @@
 
 [2B] Height Field {457没有}
 
-[2B+3BW] +depth of field, +soft shadows, +motion blur, +glossy reflection {[2B+4xB+?] 457 升级版: Monte Carlo Path Tracing; +Stratified Sampling(分层抽样)}
+[2B+3BW] +depth of field, +soft shadows, +motion blur, +glossy reflection {[2B+4xB+?] 457: Monte Carlo Path Tracing; +Stratified Sampling}
 
 [3B] Higher Level Geometry (不能用多边形近似) {[3B+B] 457 +TextureMap on Metaball}
 
