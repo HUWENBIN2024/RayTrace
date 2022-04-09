@@ -42,7 +42,9 @@
 
 [2B] New Types of Geometry e.g. Torus, Quadric 二次方表面
 
-[2B+4BW] Height Field {457没有}; +depth of field, +soft shadows, +motion blur, +glossy reflection {[2B+4x2B+?] 457 升级版: Monte Carlo Path Tracing; +Stratified Sampling(分层抽样)}
+[2B] Height Field {457没有}
+
+[2B+3BW] +depth of field, +soft shadows, +motion blur, +glossy reflection {[2B+4xB+?] 457 升级版: Monte Carlo Path Tracing; +Stratified Sampling(分层抽样)}
 
 [3B] Higher Level Geometry (不能用多边形近似) {[3B+B] 457 +TextureMap on Metaball}
 
