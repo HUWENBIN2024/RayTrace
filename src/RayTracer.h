@@ -7,6 +7,7 @@
 #include "scene/ray.h"
 
 enum AntialiasingMode { NONE, SUPER, SUPER_JITTER, ADAPTIVE, MODE_COUNT }; // Remember to update num of items in menu correctly
+// class TraceUI;
 
 class RayTracer
 {
@@ -15,7 +16,7 @@ public:
     ~RayTracer();
 
     vec3f trace( Scene *scene, double x, double y );
-	vec3f traceRay( Scene *scene, const ray& r, const vec3f& thresh, int depth );
+	vec3f traceRay( Scene *scene, const ray& r, const vec3f& thresh, int depth, bool isInObj = false );
 
 	void setAalmode(int mode) { aalmode = static_cast<AntialiasingMode>(mode); }
 
@@ -28,6 +29,8 @@ public:
 	bool loadScene( char* fn );
 
 	bool sceneLoaded();
+
+	// TraceUI* m_pUI;
 
 private:
 	unsigned char *buffer;
