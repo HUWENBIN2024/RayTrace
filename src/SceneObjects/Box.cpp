@@ -8,6 +8,7 @@ bool Box::intersectLocal( const ray& r, isect& i ) const
 	// YOUR CODE HERE:
     // Add box intersection code here.
 	// it currently ignores all boxes and just returns false.
+
 	vec3f ori = r.getPosition();
 	vec3f dir = r.getDirection();
 	double Tenter = -INFINITY;

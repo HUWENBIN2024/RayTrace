@@ -8,6 +8,11 @@
 #include "scene/ray.h"
 #include "fileio/read.h"
 #include "fileio/parse.h"
+#include <math.h>
+#include "ui/TraceUI.h"
+#define  NUMERICAL_ERROR 1.0e-9
+extern TraceUI* traceUI;
+
 
 // Trace a top-level ray through normalized window coordinates (x,y)
 // through the projection plane, and out into the scene.  All we do is
@@ -23,7 +28,7 @@ vec3f RayTracer::trace( Scene *scene, double x, double y )
 // Do recursive ray tracing!  You'll want to insert a lot of code here
 // (or places called from here) to handle reflection, refraction, etc etc.
 vec3f RayTracer::traceRay( Scene *scene, const ray& r, 
-	const vec3f& thresh, int depth )
+	const vec3f& thresh, int depth, bool isInObj )
 {
 	isect i;
 
@@ -44,9 +49,43 @@ vec3f RayTracer::traceRay( Scene *scene, const ray& r,
 		const Material& m = i.getMaterial();
 		I_result += m.shade(scene, r, i);
 
-		// Reflection and Refraction
+		vec3f ones(1.0, 1.0, 1.0);
+		I_result = prod(ones - m.kt, I_result);
 
-		thresh; // 干什么用的？
+		// recursion for reflection and refraction
+		if (depth < traceUI->getDepth())
+		{
+			// reflection
+			vec3f next_ray_position = r.getPosition() + r.getDirection() * i.t;
+			vec3f I = r.getDirection().normalize();
+			vec3f N = i.N.normalize();
+			if (m.kr[0] > 0 || m.kr[1] > 0 || m.kr[2] > 0)
+			{
+				vec3f reflect_dir = (I - 2 * (I * N) * N).normalize();
+				ray reflect_ray(next_ray_position, reflect_dir);
+				I_result += prod(m.kr, traceRay(scene, reflect_ray, thresh, depth + 1, isInObj));
+			}
+
+			// refraction
+			if (m.kt[0] > 0 || m.kt[1] > 0 || m.kt[2] > 0)
+			{
+				double n_i = isInObj ? m.index : 1;
+				double n_t = isInObj ? 1 : m.index;
+				vec3f L = -r.getDirection().normalize();
+
+				double index_ratio = n_i / n_t;
+				double discriminant = 1 - pow(index_ratio, 2) * (1 - pow(N * L, 2));
+
+				if (discriminant > 0)
+				{
+					vec3f transmission_ray_dir = (index_ratio * N * L - sqrt(discriminant)) * N - index_ratio * L;
+					ray transmission_ray(next_ray_position, transmission_ray_dir);
+					I_result += prod(m.kt, traceRay(scene, transmission_ray, thresh, depth + 1, !isInObj));
+				}
+			}
+
+		}
+		//thresh; // 干什么用的？
 		return I_result;
 	
 	} else {
@@ -57,6 +96,7 @@ vec3f RayTracer::traceRay( Scene *scene, const ray& r,
 		return vec3f( 0.0, 0.0, 0.0 );
 	}
 }
+
 
 RayTracer::RayTracer()
 {
