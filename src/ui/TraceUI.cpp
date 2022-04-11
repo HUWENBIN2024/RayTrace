@@ -112,6 +112,17 @@ void TraceUI::cb_DistScaleSlides(Fl_Widget* o, void* v)
 	((TraceUI*)(o->user_data()))->m_nDistScale = pow(10.0,double(((Fl_Slider*)o)->value()));
 }
 
+void TraceUI::cb_SubPixelSlides(Fl_Widget* o, void* v)
+{
+	((TraceUI*)(o->user_data()))->m_nSubPixels = int(((Fl_Slider*)o)->value());
+}
+
+void TraceUI::cb_antialModeChoice(Fl_Widget* o, void* v)
+{
+	int mode = (int)v;
+	((TraceUI*)(o->user_data()))->raytracer->setAalmode(mode);
+}
+
 void TraceUI::cb_render(Fl_Widget* o, void* v)
 {
 	char buffer[256];
@@ -230,95 +241,38 @@ Fl_Menu_Item TraceUI::menuitems[] = {
 	{ 0 }
 };
 
+Fl_Menu_Item TraceUI::AntialiasingModeMenu[4 + 1] = {
+	{"None",NULL, (Fl_Callback*)cb_antialModeChoice, (void*)0},
+	{"Supersampling(BW2)",NULL, (Fl_Callback*)cb_antialModeChoice, (void*)1},
+	{"Jittering(BW2)",NULL, (Fl_Callback*)cb_antialModeChoice, (void*)2},
+	{"Adaptive(BW8)",NULL, (Fl_Callback*)cb_antialModeChoice, (void*)3},
+	{0}
+};
+
 TraceUI::TraceUI() {
 	// init.
 	m_nDepth = 0;
 	m_nSize = 150;
 	m_nDACoeff[0] = 1; m_nDACoeff[1] = 0; m_nDACoeff[2] = 0;
 	m_nDistScale = 1;
-	m_mainWindow = new Fl_Window(100, 40, 320, 500, "Ray <Not Loaded>");
+	m_nSubPixels = 1;
+	m_mainWindow = new Fl_Window(100, 40, 400, 500, "Ray <Not Loaded>");
 		m_mainWindow->user_data((void*)(this));	// record self to be used by static callback functions
 		// install menu bar
 		m_menubar = new Fl_Menu_Bar(0, 0, 320, 25);
 		m_menubar->menu(menuitems);
 
-		// install slider depth
-		m_depthSlider = new Fl_Value_Slider(10, 30, 180, 20, "Depth");
-		m_depthSlider->user_data((void*)(this));	// record self to be used by static callback functions
-		m_depthSlider->type(FL_HOR_NICE_SLIDER);
-        m_depthSlider->labelfont(FL_COURIER);
-        m_depthSlider->labelsize(12);
-		m_depthSlider->minimum(0);
-		m_depthSlider->maximum(10);
-		m_depthSlider->step(1);
-		m_depthSlider->value(m_nDepth);
-		m_depthSlider->align(FL_ALIGN_RIGHT);
-		m_depthSlider->callback(cb_depthSlides);
+		// Install Sliders
+		installSlider(m_depthSlider, 1, "Depth", 0, 10, 1, m_nDepth, cb_depthSlides);
+		installSlider(m_sizeSlider, 2, "Size", 64, 512, 1, m_nSize, cb_sizeSlides);
+		installSlider(m_conDASlider, 3, "constant attenuation coefficient", 0, 1, 0.01, m_nDACoeff[0], cb_conDASlides);
+		installSlider(m_linDASlider, 4, "linear attenuation coefficient", 0, 1, 0.01, m_nDACoeff[1], cb_linDASlides);
+		installSlider(m_quaDASlider, 5, "quadratic attenuation coefficient", 0, 1, 0.01, m_nDACoeff[2], cb_quaDASlides);
+		installSlider(m_DistScaleSlider, 6, "distance scale factor (log10)", -4, 1, 0.01, m_nDistScale, cb_DistScaleSlides);
+		installSlider(m_SubPixelSlider, 7, "Sub-Pixel Samples", 1, 5, 1, m_nSubPixels, cb_SubPixelSlides);
 
-		// install slider size
-		m_sizeSlider = new Fl_Value_Slider(10, 55, 180, 20, "Size");
-		m_sizeSlider->user_data((void*)(this));	// record self to be used by static callback functions
-		m_sizeSlider->type(FL_HOR_NICE_SLIDER);
-        m_sizeSlider->labelfont(FL_COURIER);
-        m_sizeSlider->labelsize(12);
-		m_sizeSlider->minimum(64);
-		m_sizeSlider->maximum(512);
-		m_sizeSlider->step(1);
-		m_sizeSlider->value(m_nSize);
-		m_sizeSlider->align(FL_ALIGN_RIGHT);
-		m_sizeSlider->callback(cb_sizeSlides);
-
-		// install slider conDACoeff
-		m_sizeSlider = new Fl_Value_Slider(10, 80, 180, 20, "constant_attenuation_coefficient");
-		m_sizeSlider->user_data((void*)(this));	// record self to be used by static callback functions
-		m_sizeSlider->type(FL_HOR_NICE_SLIDER);
-		m_sizeSlider->labelfont(FL_COURIER);
-		m_sizeSlider->labelsize(12);
-		m_sizeSlider->minimum(0);
-		m_sizeSlider->maximum(1);
-		m_sizeSlider->step(0.01);
-		m_sizeSlider->value(m_nDACoeff[0]);
-		m_sizeSlider->align(FL_ALIGN_RIGHT);
-		m_sizeSlider->callback(cb_conDASlides);
-
-		// install slider linDACoeff
-		m_sizeSlider = new Fl_Value_Slider(10, 105, 180, 20, "linear_attenuation_coefficient");
-		m_sizeSlider->user_data((void*)(this));	// record self to be used by static callback functions
-		m_sizeSlider->type(FL_HOR_NICE_SLIDER);
-		m_sizeSlider->labelfont(FL_COURIER);
-		m_sizeSlider->labelsize(12);
-		m_sizeSlider->minimum(0);
-		m_sizeSlider->maximum(1);
-		m_sizeSlider->step(0.01);
-		m_sizeSlider->value(m_nDACoeff[1]);
-		m_sizeSlider->align(FL_ALIGN_RIGHT);
-		m_sizeSlider->callback(cb_linDASlides);
-
-		// install slider quaDACoeff
-		m_sizeSlider = new Fl_Value_Slider(10, 130, 180, 20, "quadratic_attenuation_coefficient");
-		m_sizeSlider->user_data((void*)(this));	// record self to be used by static callback functions
-		m_sizeSlider->type(FL_HOR_NICE_SLIDER);
-		m_sizeSlider->labelfont(FL_COURIER);
-		m_sizeSlider->labelsize(12);
-		m_sizeSlider->minimum(0);
-		m_sizeSlider->maximum(1);
-		m_sizeSlider->step(0.01);
-		m_sizeSlider->value(m_nDACoeff[2]);
-		m_sizeSlider->align(FL_ALIGN_RIGHT);
-		m_sizeSlider->callback(cb_quaDASlides);
-
-		// install slider DistScale
-		m_sizeSlider = new Fl_Value_Slider(10, 155, 180, 20, "distance scale factor (log10)");
-		m_sizeSlider->user_data((void*)(this));	// record self to be used by static callback functions
-		m_sizeSlider->type(FL_HOR_NICE_SLIDER);
-		m_sizeSlider->labelfont(FL_COURIER);
-		m_sizeSlider->labelsize(12);
-		m_sizeSlider->minimum(-4);
-		m_sizeSlider->maximum(1);
-		m_sizeSlider->step(0.01);
-		m_sizeSlider->value(m_nDistScale);
-		m_sizeSlider->align(FL_ALIGN_RIGHT);
-		m_sizeSlider->callback(cb_DistScaleSlides);
+		//Install Choices and Buttons
+		installChoice(m_antialModeChoice, 1, "Antialiasing Mode", AntialiasingModeMenu, cb_antialModeChoice);
 
 		m_renderButton = new Fl_Button(240, 27, 70, 25, "&Render");
 		m_renderButton->user_data((void*)(this));
@@ -336,4 +290,25 @@ TraceUI::TraceUI() {
 	m_traceGlWindow = new TraceGLWindow(100, 150, m_nSize, m_nSize, "Rendered Image");
 	m_traceGlWindow->end();
 	m_traceGlWindow->resizable(m_traceGlWindow);
+}
+
+void TraceUI::installSlider(Fl_Slider* &Slider, int indx, const char* name, double Min, double Max, double step, double initval, void (*cb)(Fl_Widget*, void*)) {
+	Slider = new Fl_Value_Slider(10, 25*indx+5, 180, 20, name);
+	Slider->user_data((void*)(this));	// record self to be used by static callback functions
+	Slider->type(FL_HOR_NICE_SLIDER);
+	Slider->labelfont(FL_COURIER);
+	Slider->labelsize(12);
+	Slider->minimum(Min);
+	Slider->maximum(Max);
+	Slider->step(step);
+	Slider->value(initval);
+	Slider->align(FL_ALIGN_RIGHT);
+	Slider->callback(cb);
+}
+
+void TraceUI::installChoice(Fl_Choice* &Choice, int indx, const char* name, Fl_Menu_Item* menu, void (*cb)(Fl_Widget*, void*)) {
+	Choice = new Fl_Choice(130+190*((indx-1)%2), 25*num_Sliders+30+25*((indx-indx%2)/2), 60, 20, name); // Ò»ÐÐÁ©°´Å¥
+	Choice->user_data((void*)(this));	 // record self to be used by static callback functions
+	Choice->menu(menu);
+	Choice->callback(cb);
 }
