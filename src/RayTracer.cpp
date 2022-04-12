@@ -55,10 +55,11 @@ vec3f RayTracer::traceRay( Scene *scene, const ray& r,
 		// recursion for reflection and refraction
 		if (depth < traceUI->getDepth())
 		{
-			// reflection
 			vec3f next_ray_position = r.getPosition() + r.getDirection() * i.t;
 			vec3f I = r.getDirection().normalize();
 			vec3f N = i.N.normalize();
+			// reflection
+			N = isInObj ? -N : N; // Beware of direction of N
 			if (m.kr[0] > 0 || m.kr[1] > 0 || m.kr[2] > 0)
 			{
 				vec3f reflect_dir = (I - 2 * (I * N) * N).normalize();
