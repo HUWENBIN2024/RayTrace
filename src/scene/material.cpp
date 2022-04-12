@@ -1,7 +1,10 @@
 #include "ray.h"
 #include "material.h"
 #include "light.h"
+#include "../ui/TraceUI.h"
 #define PI 3.14159265358979323846
+
+extern TraceUI* traceUI;
 
 // Apply the phong model to this point on the surface of the object, returning
 // the color of that point.
@@ -13,12 +16,14 @@ vec3f Material::shade( Scene *scene, const ray& r, const isect& i ) const
 	// k_e
 	I_result += ke;
 
+	bool have_ambient = false;
 	// Others
 	for (Scene::cliter itr = scene->beginLights(); itr != scene->endLights(); ++itr) {
 		vec3f isectPos = r.at(i.t);
 		// k_a; Normally, there is only one ambient light.
 		if ((*itr)->getType() == "Ambient") {
 			I_result += prod((vec3f(1,1,1)-kt),prod(ka, (*itr)->getColor(isectPos)));
+			have_ambient = true;
 			continue;
 		}
 		// distance attenuation
@@ -34,6 +39,10 @@ vec3f Material::shade( Scene *scene, const ray& r, const isect& i ) const
 		vec3f specular = pow(max(0.0, (-r.getDirection())*V),128*shininess) * ks;
 		// final
 		I_result += prod((vec3f(1, 1, 1) - kt), d_atten * prod(prod(s_atten, (*itr)->getColor(isectPos)),(diffuse+specular)));
+	}
+
+	if (!have_ambient) {//Then, use user defined ambient light.
+		I_result += prod((vec3f(1, 1, 1) - kt), prod(ka, traceUI->getAmbientLight()));
 	}
 
 	// For now, this method just returns the diffuse color of the object.

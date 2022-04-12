@@ -33,7 +33,8 @@ public:
 	Fl_Slider*			m_quaDASlider;
 	Fl_Slider*			m_DistScaleSlider;
 	Fl_Slider*			m_SubPixelSlider;
-	int					num_Sliders = 7;
+	Fl_Slider*			m_AmbientLightSlider;
+	int					num_Sliders = 8;
 
 	static Fl_Menu_Item	AntialiasingModeMenu[5];
 	Fl_Choice*			m_antialModeChoice;
@@ -55,6 +56,7 @@ public:
 	double*		getDACoeff() {return m_nDACoeff;}
 	double		getDistScale() { return m_nDistScale; }
 	int			getSubPixels() { return m_nSubPixels; }
+	vec3f		getAmbientLight() { return vec3f(m_nAmbientLight, m_nAmbientLight, m_nAmbientLight); } // Fix same value for 3 channels for simplicity
 
 private:
 	RayTracer*	raytracer;
@@ -64,6 +66,7 @@ private:
 	double		m_nDACoeff[3];
 	double		m_nDistScale;
 	int			m_nSubPixels;
+	double		m_nAmbientLight;
 
 // static class members
 	static Fl_Menu_Item menuitems[];
@@ -84,6 +87,7 @@ private:
 	static void cb_quaDASlides(Fl_Widget* o, void* v);
 	static void cb_DistScaleSlides(Fl_Widget* o, void* v);
 	static void cb_SubPixelSlides(Fl_Widget* o, void* v);
+	static void cb_AmbientLightSlides(Fl_Widget* o, void* v);
 
 	static void cb_antialModeChoice(Fl_Widget* o, void* v);
 

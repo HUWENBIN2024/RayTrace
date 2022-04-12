@@ -16,10 +16,16 @@ vec3f DirectionalLight::shadowAttenuation( const vec3f& P ) const
     // You should implement shadow-handling code here.
 	ray r(P, getDirection(P)); isect i;
 	vec3f s_atten(1, 1, 1);
+	if (true) { //BW5 Accelerate Shadow Attenuation
+		if (scene->willIntersectOpaqueObject(r, i)) return vec3f(0, 0, 0);
+	}
 	if (scene->intersect(r, i)) {
 		if (i.getMaterial().kt != vec3f(0, 0, 0)) { // Speed up the algorithm
 			s_atten = prod(s_atten, i.getMaterial().kt);
 			s_atten = prod(s_atten, shadowAttenuation(r.at(i.t))); // recursive
+		}
+		else {
+			s_atten = vec3f(0, 0, 0);
 		}
 	}
     return s_atten;
@@ -50,7 +56,7 @@ double PointLight::distanceAttenuation( const vec3f& P ) const
 		return 1 / max(epsilon, aa[0] + aa[1] * d + aa[2] * d * d); // Avoid negative or infinity result
 	}
 	else {// coeffs from .ray file
-		return 1 / max(epsilon, a + b * d + c * d * d); // Avoid negative or infinity result
+		return min(1, 1 / max(epsilon, a + b * d + c * d * d)); // Avoid negative or infinity result
 	}
 }
 
@@ -74,6 +80,13 @@ vec3f PointLight::shadowAttenuation(const vec3f& P) const
 	double src_t = (position - P)[0] / getDirection(P)[0];
 	if ((position - P) == vec3f(0, 0, 0)) src_t = 0;
 	vec3f s_atten(1, 1, 1);
+	if (true) { //BW5 Accelerate Shadow Attenuation
+		if (scene->willIntersectOpaqueObject(r, i)) {
+			if (i.t < src_t) {
+				return vec3f(0, 0, 0);
+			}
+		}
+	}
 	if (scene->intersect(r, i)) {
 		if (i.t >= src_t && src_t >= 0) {
 			return s_atten;

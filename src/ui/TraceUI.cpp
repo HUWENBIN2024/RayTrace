@@ -117,6 +117,11 @@ void TraceUI::cb_SubPixelSlides(Fl_Widget* o, void* v)
 	((TraceUI*)(o->user_data()))->m_nSubPixels = int(((Fl_Slider*)o)->value());
 }
 
+void TraceUI::cb_AmbientLightSlides(Fl_Widget* o, void* v)
+{
+	((TraceUI*)(o->user_data()))->m_nAmbientLight = double(((Fl_Slider*)o)->value());
+}
+
 void TraceUI::cb_antialModeChoice(Fl_Widget* o, void* v)
 {
 	int mode = (int)v;
@@ -256,6 +261,7 @@ TraceUI::TraceUI() {
 	m_nDACoeff[0] = 1; m_nDACoeff[1] = 0; m_nDACoeff[2] = 0;
 	m_nDistScale = 1;
 	m_nSubPixels = 1;
+	m_nAmbientLight = 0;
 	m_mainWindow = new Fl_Window(100, 40, 400, 500, "Ray <Not Loaded>");
 		m_mainWindow->user_data((void*)(this));	// record self to be used by static callback functions
 		// install menu bar
@@ -270,6 +276,7 @@ TraceUI::TraceUI() {
 		installSlider(m_quaDASlider, 5, "quadratic attenuation coefficient", 0, 1, 0.01, m_nDACoeff[2], cb_quaDASlides);
 		installSlider(m_DistScaleSlider, 6, "distance scale factor (log10)", -4, 1, 0.01, m_nDistScale, cb_DistScaleSlides);
 		installSlider(m_SubPixelSlider, 7, "Sub-Pixel Samples", 1, 5, 1, m_nSubPixels, cb_SubPixelSlides);
+		installSlider(m_AmbientLightSlider, 8, "Ambient Light", 0, 1, 0.01, m_nAmbientLight, cb_AmbientLightSlides);
 
 		//Install Choices and Buttons
 		installChoice(m_antialModeChoice, 1, "Antialiasing Mode", AntialiasingModeMenu, cb_antialModeChoice);

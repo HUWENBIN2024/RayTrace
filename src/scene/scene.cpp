@@ -171,6 +171,36 @@ bool Scene::intersect( const ray& r, isect& i ) const
 	return have_one;
 }
 
+bool Scene::willIntersectOpaqueObject(const ray& r, isect& i) const
+{
+	typedef list<Geometry*>::const_iterator iter;
+	iter j;
+
+	isect cur;
+
+	// try the non-bounded objects
+	for (j = nonboundedobjects.begin(); j != nonboundedobjects.end(); ++j) {
+		if ((*j)->intersect(r, cur)) {
+			if (cur.getMaterial().kt == vec3f(0, 0, 0)) {
+				i = cur;
+				return true;
+			}
+		}
+	}
+
+	// try the bounded objects
+	for (j = boundedobjects.begin(); j != boundedobjects.end(); ++j) {
+		if ((*j)->intersect(r, cur)) {
+			if (cur.getMaterial().kt == vec3f(0, 0, 0)) {
+				i = cur;
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
+
 void Scene::initScene()
 {
 	bool first_boundedobject = true;

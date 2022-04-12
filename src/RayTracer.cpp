@@ -247,14 +247,14 @@ vec3f RayTracer::traceSubPixel(double* coords, int numSubPixels, int &depth) { /
 		double dx = (coords[2] - coords[0]) / numSubPixels;
 		double dy = (coords[3] - coords[1]) / numSubPixels;
 		vec3f result(0, 0, 0);
-		++depth;
 		for (int j = 0; j < numSubPixels; ++j) {
 			for (int i = 0; i < numSubPixels; ++i) {
 				double subCoords[4] = { coords[0] + i * dx, coords[1] + j * dy, coords[0] + (i + 1) * dx, coords[1] + (j + 1) * dy };
+				++depth;
 				result += traceSubPixel(subCoords, numSubPixels, depth);
+				--depth;
 			}
 		}
-		--depth;
 		result /= pow(numSubPixels, 2);
 		return result;
 	}
