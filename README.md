@@ -22,23 +22,23 @@
 
 2. [W+W] Antialiasing by Supersampling and Averaging Down; +Jittering 完成
 
-3. [B] Spot Light 聚光灯
+3. [B] Spot Light 聚光灯 H
 
-4. [B] Background Image 背景图片 {[2B] 457 升级版: Background Image Box}
+4. [B] Background Image 背景图片 {[2B] 457 升级版: Background Image Box}  H
 
 5. [B] Accelarate Shadow Attenuation
 
-6. [B] Overlapping Objects (in Refraction)
+6. [B] Overlapping Objects (in Refraction) H
 
-7. [BW+?] Texture Mapping; +Additional Mapping; +Mapping on Trimeshes {457没有}
+7. [BW+?] Texture Mapping; +Additional Mapping; +Mapping on Trimeshes {457没有} H
 
 8. [BW] Antialiasing by Adaptive Supersampling 完成
 
 9. [BW] More Lighting Control e.g. Warn Model {457没有}
 
-10. [2B] Bump Mapping 凹凸贴图
+10. [2B] Bump Mapping 凹凸贴图 H
 
-11. [2B] Solid Textures 三维纹理
+11. [2B] Solid Textures 三维纹理 H
 
 12. [2B] New Types of Geometry e.g. Torus, Quadric 二次方表面
 
