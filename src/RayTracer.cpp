@@ -98,6 +98,7 @@ vec3f RayTracer::traceRay( Scene *scene, const ray& r,
 }
 
 
+
 RayTracer::RayTracer()
 {
 	buffer = NULL;
