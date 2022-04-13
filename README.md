@@ -18,43 +18,45 @@
 
 ### UST COMP4411
 
-[W] Adaptive Termination Condition Based on Ray Contribution
+1. [W] Adaptive Termination Condition Based on Ray Contribution H
 
-[W+W] Antialiasing by Supersampling and Averaging Down; +Jittering
+2. [W+W] Antialiasing by Supersampling and Averaging Down; +Jittering 完成
 
-[B] Spot Light 聚光灯
+3. [B] Spot Light 聚光灯
 
-[B] Background Image 背景图片 {[2B] 457 升级版: Background Image Box}
+4. [B] Background Image 背景图片 {[2B] 457 升级版: Background Image Box}
 
-[B] Accelarate Shadow Attenuation
+5. [B] Accelarate Shadow Attenuation
 
-[B] Overlapping Objects (in Refraction)
+6. [B] Overlapping Objects (in Refraction)
 
-[BW+?] Texture Mapping; +Additional Mapping; +Mapping on Trimeshes {457没有}
+7. [BW+?] Texture Mapping; +Additional Mapping; +Mapping on Trimeshes {457没有}
 
-[BW] Antialiasing by Adaptive Supersampling
+8. [BW] Antialiasing by Adaptive Supersampling 完成
 
-[BW] More Lighting Control e.g. Warn Model {457没有}
+9. [BW] More Lighting Control e.g. Warn Model {457没有}
 
-[2B] Bump Mapping 凹凸贴图
+10. [2B] Bump Mapping 凹凸贴图
 
-[2B] Solid Textures 三维纹理
+11. [2B] Solid Textures 三维纹理
 
-[2B] New Types of Geometry e.g. Torus, Quadric 二次方表面
+12. [2B] New Types of Geometry e.g. Torus, Quadric 二次方表面
 
-[2B+4BW] Height Field {457没有}; +depth of field, +soft shadows, +motion blur, +glossy reflection {[2B+4x2B+?] 457 升级版: Monte Carlo Path Tracing; +Stratified Sampling(分层抽样)}
+13. [2B] Height Field {457没有}
 
-[3B] Higher Level Geometry (不能用多边形近似) {[3B+B] 457 +TextureMap on Metaball}
+14. [2B+3BW] +depth of field, +soft shadows, +motion blur, +glossy reflection {[2B+4xB+?] 457: Monte Carlo Path Tracing; +Stratified Sampling}
 
-[3B] Ray Intersection Optimization. E.g. BSP Tree, Hierachical Bounding Volumes
+15. [3B] Higher Level Geometry (不能用多边形近似) {[3B+B] 457 +TextureMap on Metaball}
 
-[4B+/-] More Realistic Shading Model {[2B] 457}
+16. [3B] Ray Intersection Optimization. E.g. BSP Tree, Hierachical Bounding Volumes
 
-[4B] Constructive Solid Geometry
+17. [4B+/-] More Realistic Shading Model {[2B] 457}
 
-[4B] Particle Systems Simulation & Renderer {457没有(这不应该是Animator里面的吗)}
+18. [4B] Constructive Solid Geometry
 
-[4B] Caustics
+19. [4B] Particle Systems Simulation & Renderer {457没有(这不应该是Animator里面的吗)}
+
+20. [4B] Caustics
 
 ----------------------------------------------------------------------------
 

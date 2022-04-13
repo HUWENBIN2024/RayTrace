@@ -32,6 +32,11 @@ public:
 	Fl_Slider*			m_linDASlider;
 	Fl_Slider*			m_quaDASlider;
 	Fl_Slider*			m_DistScaleSlider;
+	Fl_Slider*			m_SubPixelSlider;
+	int					num_Sliders = 7;
+
+	static Fl_Menu_Item	AntialiasingModeMenu[5];
+	Fl_Choice*			m_antialModeChoice;
 
 	Fl_Button*			m_renderButton;
 	Fl_Button*			m_stopButton;
@@ -40,6 +45,8 @@ public:
 
 	// member functions
 	void show();
+	void installSlider(Fl_Slider* &slider, int indx, const char* name, double Min, double Max, double step, double initval, void (*cb)(Fl_Widget*, void*));
+	void installChoice(Fl_Choice* &Choice, int indx, const char* name, Fl_Menu_Item* menu, void (*cb)(Fl_Widget*, void*));
 
 	void		setRayTracer(RayTracer *tracer);
 
@@ -47,6 +54,7 @@ public:
 	int			getDepth();
 	double*		getDACoeff() {return m_nDACoeff;}
 	double		getDistScale() { return m_nDistScale; }
+	int			getSubPixels() { return m_nSubPixels; }
 
 private:
 	RayTracer*	raytracer;
@@ -55,6 +63,7 @@ private:
 	int			m_nDepth;
 	double		m_nDACoeff[3];
 	double		m_nDistScale;
+	int			m_nSubPixels;
 
 // static class members
 	static Fl_Menu_Item menuitems[];
@@ -74,6 +83,9 @@ private:
 	static void cb_linDASlides(Fl_Widget* o, void* v);
 	static void cb_quaDASlides(Fl_Widget* o, void* v);
 	static void cb_DistScaleSlides(Fl_Widget* o, void* v);
+	static void cb_SubPixelSlides(Fl_Widget* o, void* v);
+
+	static void cb_antialModeChoice(Fl_Widget* o, void* v);
 
 	static void cb_render(Fl_Widget* o, void* v);
 	static void cb_stop(Fl_Widget* o, void* v);
