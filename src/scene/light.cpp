@@ -10,7 +10,6 @@ double DirectionalLight::distanceAttenuation( const vec3f& P ) const
 	return 1.0;
 }
 
-
 vec3f DirectionalLight::shadowAttenuation( const vec3f& P ) const
 {
     // YOUR CODE HERE:
@@ -85,6 +84,7 @@ vec3f PointLight::shadowAttenuation(const vec3f& P) const
 		else {
 			s_atten = prod(s_atten, i.getMaterial().kt);
 			s_atten = prod(s_atten, shadowAttenuation(r.at(i.t))); // recursive
+			return s_atten;
 		}
 	}
 	else {
