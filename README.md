@@ -18,7 +18,7 @@
 
 ### UST COMP4411
 
-1. [W] Adaptive Termination Condition Based on Ray Contribution
+1. [W] Adaptive Termination Condition Based on Ray Contribution H
 
 2. [W+W] Antialiasing by Supersampling and Averaging Down; +Jittering 完成
 
