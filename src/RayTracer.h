@@ -24,13 +24,14 @@ public:
 	double aspectRatio();
 	void traceSetup( int w, int h );
 	void traceLines( int start = 0, int stop = 10000000 );
-	void tracePixel( int i, int j );
+	void tracePixel( int i, int j ,vec3f** RRAS);
 
 	bool loadScene( char* fn );
 
 	bool sceneLoaded();
 
 	// TraceUI* m_pUI;
+	int randnum;
 
 private:
 	unsigned char *buffer;
@@ -38,7 +39,7 @@ private:
 	int bufferSize;
 	Scene *scene;
 	AntialiasingMode aalmode;
-	vec3f traceSubPixel(double* coords, int numSubPixels, int &depth); // For Adaptive Supersampling
+	vec3f traceSubPixel(vec3f* color_of_4_corners, double* coords, int &depth); // For Adaptive Supersampling
 
 	bool m_bSceneLoaded;
 };

@@ -8,6 +8,18 @@
 // Modified by Craig Kaplan and Daniel Wood, April 1999
 
 #include "vecmath.h"
+#include <time.h>
+#include <math.h>
+
+const double PI = 3.141592653589793238462643383279;
+
+double getRandomAngle(int r) {
+	return double(r % 500) / 500 * 2 * PI;
+}
+
+double getDistributedDistance(int r, double max) {
+	return double(r % 500) / 500 * max;
+}
 
 mat3f mat3f::inverse() const	    // Gauss-Jordan elimination with partial pivoting
 {

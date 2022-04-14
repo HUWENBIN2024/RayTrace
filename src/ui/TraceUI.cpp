@@ -12,6 +12,8 @@
 #include "TraceUI.h"
 #include "../RayTracer.h"
 
+int** randnumbers; //2d array of random integers
+
 static bool done;
 
 //------------------------------------- Help Functions --------------------------------------------
@@ -128,6 +130,27 @@ void TraceUI::cb_antialModeChoice(Fl_Widget* o, void* v)
 	((TraceUI*)(o->user_data()))->raytracer->setAalmode(mode);
 }
 
+void TraceUI::cb_glossyReflection(Fl_Widget* o, void* v)
+{
+	TraceUI* pUI = ((TraceUI*)(o->user_data()));
+	if (pUI->glossyReflectionOn == true) pUI->glossyReflectionOn = false;
+	else pUI->glossyReflectionOn = true;
+}
+
+void TraceUI::cb_softShadow(Fl_Widget* o, void* v)
+{
+	TraceUI* pUI = ((TraceUI*)(o->user_data()));
+	if (pUI->softShadowOn == true) pUI->softShadowOn = false;
+	else pUI->softShadowOn = true;
+}
+
+void TraceUI::cb_DOF(Fl_Widget* o, void* v)
+{
+	TraceUI* pUI = ((TraceUI*)(o->user_data()));
+	if (pUI->DOFOn == true) pUI->DOFOn = false;
+	else pUI->DOFOn = true;
+}
+
 void TraceUI::cb_render(Fl_Widget* o, void* v)
 {
 	char buffer[256];
@@ -155,6 +178,23 @@ void TraceUI::cb_render(Fl_Widget* o, void* v)
 		Fl::check();
 		Fl::flush();
 
+		vec3f** RRAS = new vec3f * [height + 1]; // RRAS means adaptive result record for adaptive supersampling
+		for (int j = 0; j < height + 1; ++j) { // Initialization with (-1,-1,-1)
+			RRAS[j] = new vec3f[width + 1];
+			for (int i = 0; i < width + 1; ++i) {
+				RRAS[j][i] = vec3f(-1, -1, -1);
+			}
+		}
+
+		srand((unsigned)time(0));
+		randnumbers = new int* [height];
+		for (int j = 0; j < height; ++j) {
+			randnumbers[j] = new int[width];
+			for (int i = 0; i < width; ++i) {
+				randnumbers[j][i] = rand();
+			}
+		}
+
 		for (int y=0; y<height; y++) {
 			for (int x=0; x<width; x++) {
 				if (done) break;
@@ -178,7 +218,7 @@ void TraceUI::cb_render(Fl_Widget* o, void* v)
 					}
 				}
 
-				pUI->raytracer->tracePixel( x, y );
+				pUI->raytracer->tracePixel( x, y, RRAS );
 		
 			}
 			if (done) break;
@@ -197,6 +237,19 @@ void TraceUI::cb_render(Fl_Widget* o, void* v)
 			pUI->m_traceGlWindow->label(buffer);
 			
 		}
+
+		for (int j = 0; j < height; ++j) {
+			delete[] randnumbers[j];
+		}
+		delete[] randnumbers;
+		randnumbers = nullptr;
+
+		for (int j = 0; j < height + 1; ++j) { // deletion
+			delete[] RRAS[j];
+		}
+		delete[] RRAS;
+		RRAS = nullptr;
+
 		done=true;
 		pUI->m_traceGlWindow->refresh();
 
@@ -262,6 +315,9 @@ TraceUI::TraceUI() {
 	m_nDistScale = 1;
 	m_nSubPixels = 1;
 	m_nAmbientLight = 0;
+	glossyReflectionOn = false;
+	softShadowOn = false;
+	DOFOn = false;
 	m_mainWindow = new Fl_Window(100, 40, 400, 500, "Ray <Not Loaded>");
 		m_mainWindow->user_data((void*)(this));	// record self to be used by static callback functions
 		// install menu bar
@@ -280,6 +336,9 @@ TraceUI::TraceUI() {
 
 		//Install Choices and Buttons
 		installChoice(m_antialModeChoice, 1, "Antialiasing Mode", AntialiasingModeMenu, cb_antialModeChoice);
+		installLightButton(m_glossyReflection, 2, "Glossy Reflection", cb_glossyReflection);
+		installLightButton(m_softShadow, 3, "Soft Shadow", cb_softShadow);
+		installLightButton(m_DOF, 4, "Depth of Field", cb_DOF);
 
 		m_renderButton = new Fl_Button(240, 27, 70, 25, "&Render");
 		m_renderButton->user_data((void*)(this));
@@ -314,8 +373,15 @@ void TraceUI::installSlider(Fl_Slider* &Slider, int indx, const char* name, doub
 }
 
 void TraceUI::installChoice(Fl_Choice* &Choice, int indx, const char* name, Fl_Menu_Item* menu, void (*cb)(Fl_Widget*, void*)) {
-	Choice = new Fl_Choice(130+190*((indx-1)%2), 25*num_Sliders+30+25*((indx-indx%2)/2), 60, 20, name); // 一行俩按钮
+	Choice = new Fl_Choice(130+190*((indx-1)%2), 25*num_Sliders+30+25*((indx-1)/2), 60, 20, name); // 一行俩按钮
 	Choice->user_data((void*)(this));	 // record self to be used by static callback functions
 	Choice->menu(menu);
 	Choice->callback(cb);
+}
+
+void TraceUI::installLightButton(Fl_Light_Button*& Button, int indx, const char* name, void (*cb)(Fl_Widget*, void*)) {
+	Button = new Fl_Light_Button(130 + 190 * ((indx - 1) % 2), 25 * num_Sliders + 30 + 25 * ((indx - 1) / 2), 60, 20, name);
+	Button->user_data((void*)(this));   // record self to be used by static callback functions
+	Button->callback(cb);
+	Button->align(FL_ALIGN_LEFT);
 }

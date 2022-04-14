@@ -26,7 +26,7 @@
 
 [B] Background Image 背景图片 {[2B] 457 升级版: Background Image Box}
 
-[B] Accelarate Shadow Attenuation
+[B] Accelarate Shadow Attenuation J
 
 [B] Overlapping Objects (in Refraction)
 
@@ -44,11 +44,11 @@
 
 [2B] Height Field {457没有}
 
-[2B+3BW] +depth of field, +soft shadows, +motion blur, +glossy reflection {[2B+4xB+?] 457: Monte Carlo Path Tracing; +Stratified Sampling}
+[2B+3BW] +depth of field, +soft shadows, +motion blur, +glossy reflection {[2B+4xB+?] 457: Monte Carlo Path Tracing; +Stratified Sampling} J
 
 [3B] Higher Level Geometry (不能用多边形近似) {[3B+B] 457 +TextureMap on Metaball}
 
-[3B] Ray Intersection Optimization. E.g. BSP Tree, Hierachical Bounding Volumes
+[3B] Ray Intersection Optimization. E.g. BSP Tree, Hierachical Bounding Volumes J
 
 [4B+/-] More Realistic Shading Model {[2B] 457}
 
@@ -56,7 +56,7 @@
 
 [4B] Particle Systems Simulation & Renderer {457没有(这不应该是Animator里面的吗)}
 
-[4B] Caustics
+[4B] Caustics J
 
 ----------------------------------------------------------------------------
 

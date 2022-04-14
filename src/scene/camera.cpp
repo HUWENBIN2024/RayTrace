@@ -1,4 +1,8 @@
 #include "camera.h"
+#include "../vecmath/vecmath.h"
+#include "../ui/TraceUI.h"
+
+extern TraceUI* traceUI;
 
 #define PI 3.14159265359
 #define SHOW(x) (cerr << #x << " = " << (x) << "\n")
@@ -22,6 +26,12 @@ Camera::rayThrough( double x, double y, ray &r )
     x -= 0.5;
     y -= 0.5;
     vec3f dir = look + x * u + y * v;
+    if (traceUI->DOFisOn()) {
+        int randnum = traceUI->getRayTracer()->randnum;
+        double randx = getDistributedDistance(randnum, 0.03) * cos(getRandomAngle(randnum));
+        double randy = getDistributedDistance(randnum, 0.03) * sin(getRandomAngle(randnum));
+        dir -= vec3f(randx, randy, 0);
+    }
     r = ray( eye, dir.normalize() );
 }
 
