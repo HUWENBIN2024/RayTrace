@@ -8,6 +8,7 @@ class Camera
 public:
     Camera();
     void rayThrough( double x, double y, ray &r );
+    void DOFrayThrough(double x, double y, ray& r, int index, int gridSize);
     void setEye( const vec3f &eye );
     void setLook( double, double, double, double );
     void setLook( const vec3f &viewDir, const vec3f &upDir );

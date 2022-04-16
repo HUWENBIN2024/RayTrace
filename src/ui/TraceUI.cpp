@@ -12,7 +12,8 @@
 #include "TraceUI.h"
 #include "../RayTracer.h"
 
-int** randnumbers; //2d array of random integers
+int**** randnumbers; //2d array of random integers
+extern TraceUI* traceUI;
 
 static bool done;
 
@@ -124,6 +125,16 @@ void TraceUI::cb_AmbientLightSlides(Fl_Widget* o, void* v)
 	((TraceUI*)(o->user_data()))->m_nAmbientLight = double(((Fl_Slider*)o)->value());
 }
 
+void TraceUI::cb_SampleRaySlides(Fl_Widget* o, void* v)
+{
+	((TraceUI*)(o->user_data()))->m_nSampleRays = double(((Fl_Slider*)o)->value());
+}
+
+void TraceUI::cb_DOFdepth(Fl_Widget* o, void* v)
+{
+	((TraceUI*)(o->user_data()))->DOFdepth = double(((Fl_Slider*)o)->value());
+}
+
 void TraceUI::cb_antialModeChoice(Fl_Widget* o, void* v)
 {
 	int mode = (int)v;
@@ -149,6 +160,13 @@ void TraceUI::cb_DOF(Fl_Widget* o, void* v)
 	TraceUI* pUI = ((TraceUI*)(o->user_data()));
 	if (pUI->DOFOn == true) pUI->DOFOn = false;
 	else pUI->DOFOn = true;
+}
+
+void TraceUI::cb_MC(Fl_Widget* o, void* v)
+{
+	TraceUI* pUI = ((TraceUI*)(o->user_data()));
+	if (pUI->MCon == true) pUI->MCon = false;
+	else pUI->MCon = true;
 }
 
 void TraceUI::cb_render(Fl_Widget* o, void* v)
@@ -187,11 +205,19 @@ void TraceUI::cb_render(Fl_Widget* o, void* v)
 		}
 
 		srand((unsigned)time(0));
-		randnumbers = new int* [height];
+		int t = pow(traceUI->getSubPixels(), 2);
+		int t2 = pow(traceUI->getNumSampleRays(), 2);
+		randnumbers = new int*** [height];
 		for (int j = 0; j < height; ++j) {
-			randnumbers[j] = new int[width];
+			randnumbers[j] = new int** [width];
 			for (int i = 0; i < width; ++i) {
-				randnumbers[j][i] = rand();
+				randnumbers[j][i] = new int*[t];
+				for (int k = 0; k < t; ++k) {
+					randnumbers[j][i][k] = new int[t2+1];
+					for (int l = 0; l < t2+1; ++l) {
+						randnumbers[j][i][k][l] = rand();
+					}
+				}
 			}
 		}
 
@@ -239,6 +265,12 @@ void TraceUI::cb_render(Fl_Widget* o, void* v)
 		}
 
 		for (int j = 0; j < height; ++j) {
+			for (int i = 0; i < width; ++i) {
+				for (int k = 0; k < t; ++k) {
+					delete[] randnumbers[j][i][k];
+				}
+				delete[] randnumbers[j][i];
+			}
 			delete[] randnumbers[j];
 		}
 		delete[] randnumbers;
@@ -318,6 +350,9 @@ TraceUI::TraceUI() {
 	glossyReflectionOn = false;
 	softShadowOn = false;
 	DOFOn = false;
+	DOFdepth = 1;
+	MCon = false;
+	m_nSampleRays = 4;
 	m_mainWindow = new Fl_Window(100, 40, 400, 500, "Ray <Not Loaded>");
 		m_mainWindow->user_data((void*)(this));	// record self to be used by static callback functions
 		// install menu bar
@@ -333,12 +368,15 @@ TraceUI::TraceUI() {
 		installSlider(m_DistScaleSlider, 6, "distance scale factor (log10)", -4, 1, 0.01, m_nDistScale, cb_DistScaleSlides);
 		installSlider(m_SubPixelSlider, 7, "Sub-Pixel Samples", 1, 5, 1, m_nSubPixels, cb_SubPixelSlides);
 		installSlider(m_AmbientLightSlider, 8, "Ambient Light", 0, 1, 0.01, m_nAmbientLight, cb_AmbientLightSlides);
+		installSlider(m_DOFdepthSlider, 9, "DOF Focus Depth", 1, 10, 0.1, DOFdepth, cb_DOFdepth);
+		installSlider(m_nSampleRaySlider, 10, "Sqrt of No. of Sample Rays", 1, 4, 1, m_nSampleRays, cb_SampleRaySlides);
 
 		//Install Choices and Buttons
 		installChoice(m_antialModeChoice, 1, "Antialiasing Mode", AntialiasingModeMenu, cb_antialModeChoice);
-		installLightButton(m_glossyReflection, 2, "Glossy Reflection", cb_glossyReflection);
-		installLightButton(m_softShadow, 3, "Soft Shadow", cb_softShadow);
-		installLightButton(m_DOF, 4, "Depth of Field", cb_DOF);
+		installLightButton(m_MC, 2, "Monte Carlo", cb_MC);
+		installLightButton(m_glossyReflection, 3, "Glossy Reflection", cb_glossyReflection);
+		installLightButton(m_softShadow, 4, "Soft Shadow", cb_softShadow);
+		installLightButton(m_DOF, 5, "Depth of Field", cb_DOF);
 
 		m_renderButton = new Fl_Button(240, 27, 70, 25, "&Render");
 		m_renderButton->user_data((void*)(this));

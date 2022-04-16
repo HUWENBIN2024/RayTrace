@@ -68,33 +68,18 @@ vec3f PointLight::getColor( const vec3f& P ) const
 
 vec3f PointLight::getDirection( const vec3f& P ) const
 {
-	vec3f dir(0, 0, 0);
-	if (traceUI->SoftShadowIsOn()) { // BW14 Soft Shadow
-		// compute reflect_dir according to some distribution. apply monte carlo
-		vec3f dir_c = (position - P).normalize(); // c means center
-		vec3f perp(0, 0, 0);
-		if (dir_c[0] != 0) { perp[0] = (-dir_c[1] - dir_c[2]) / dir_c[0]; perp[1] = 1; perp[2] = 1; }
-		else if (dir_c[1] != 0) { perp[1] = (-dir_c[0] - dir_c[2]) / dir_c[1]; perp[0] = 1; perp[2] = 1; }
-		else if (dir_c[2] != 0) { perp[2] = (-dir_c[1] - dir_c[0]) / dir_c[2]; perp[1] = 1; perp[0] = 1; }
-		else { cerr << "reflect direction vector is zero vector" << endl; }
-		int randnum = traceUI->getRayTracer()->randnum;
-		dir = dir_c + perp.normalize() * getDistributedDistance(randnum, 0.03);
-		mat4f random_rotate = mat4f::rotate(dir_c, getRandomAngle(randnum));
-		dir = dir.normalize();
-		dir = random_rotate * dir;
-	}
-	else {
-		dir = (position - P).normalize();
-	}
-	return dir;
+	return (position - P).normalize();
 }
 
+vec3f PointLight::getDirection(const vec3f& P, vec3f newposition) const
+{
+	return (newposition - P).normalize();
+}
 
 vec3f PointLight::shadowAttenuation(const vec3f& P) const
 {
-    // YOUR CODE HERE:
-    // You should implement shadow-handling code here.
-	ray r(P, getDirection(P)); isect i;
+	ray r; isect i;
+	r = ray(P, getDirection(P));
 	double src_t = (position - P)[0] / getDirection(P)[0];
 	if (position == P) src_t = 0;
 	vec3f s_atten(1, 1, 1);
@@ -115,6 +100,59 @@ vec3f PointLight::shadowAttenuation(const vec3f& P) const
 		else {
 			s_atten = prod(s_atten, i.getMaterial().kt);
 			s_atten = prod(s_atten, shadowAttenuation(r.at(i.t))); // recursive
+			return s_atten;
+		}
+	}
+	else {
+		if (src_t >= 0) {
+			return s_atten;
+		}
+		else {
+			return vec3f(0, 0, 0);
+		}
+	}
+}
+
+vec3f PointLight::shadowAttenuation(const vec3f& P, int index) const
+{
+    // YOUR CODE HERE:
+    // You should implement shadow-handling code here.
+	vec3f newposition; ray r; isect i;
+
+		vec3f dir(0, 0, 0);
+		vec3f dir_c = (position - P); // c means center
+		vec3f perp(0, 0, 0);
+		if (dir_c[0] != 0) { perp[0] = (-dir_c[1] - dir_c[2]) / dir_c[0]; perp[1] = 1; perp[2] = 1; }
+		else if (dir_c[1] != 0) { perp[1] = (-dir_c[0] - dir_c[2]) / dir_c[1]; perp[0] = 1; perp[2] = 1; }
+		else if (dir_c[2] != 0) { perp[2] = (-dir_c[1] - dir_c[0]) / dir_c[2]; perp[1] = 1; perp[0] = 1; }
+		else { cerr << "zero vector" << endl; }
+		int* randnum = traceUI->getRayTracer()->randnum;
+		dir = dir_c + perp.normalize() * getDistributedDistance(randnum[index], 0.1);
+		mat4f random_rotate = mat4f::rotate(dir_c.normalize(), getRandomAngle(randnum[index + 1]));
+		dir = random_rotate * dir;
+		newposition = dir + P;
+
+	r = ray(P, getDirection(P, newposition));
+	double src_t = (newposition - P)[0] / getDirection(P, newposition)[0];
+	if (newposition == P) src_t = 0;
+	vec3f s_atten(1, 1, 1);
+	if (false) { //BW5 Accelerate Shadow Attenuation
+		if (scene->willIntersectOpaqueObject(r, i)) {
+			if (i.t < src_t) {
+				return vec3f(0, 0, 0);
+			}
+		}
+	}
+	if (scene->intersect(r, i)) {
+		if (i.t >= src_t && src_t >= 0) {
+			return s_atten;
+		}
+		else if (i.t >= src_t && src_t < 0) {
+			return vec3f(0, 0, 0);
+		}
+		else {
+			s_atten = prod(s_atten, i.getMaterial().kt);
+			s_atten = prod(s_atten, shadowAttenuation(r.at(i.t), index)); // recursive
 			return s_atten;
 		}
 	}

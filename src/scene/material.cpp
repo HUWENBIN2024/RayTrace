@@ -30,7 +30,16 @@ vec3f Material::shade(Scene* scene, const ray& r, const isect& i) const
 		// distance attenuation
 		double d_atten = (*itr)->distanceAttenuation(isectPos);
 		// shadow attenuation
-		vec3f s_atten = (*itr)->shadowAttenuation(isectPos);
+		vec3f s_atten(0,0,0);
+		if (traceUI->SoftShadowIsOn() && (*itr)->getType() == "Point") {
+			int t = pow(traceUI->getNumSampleRays(), 2);
+			for (int i = 0; i < t; ++i) {
+				s_atten += dynamic_cast<PointLight*>(*itr)->shadowAttenuation(isectPos, i) / t;
+			}
+		}
+		else {
+			s_atten = (*itr)->shadowAttenuation(isectPos);
+		}
 		// k_d
 		vec3f L_i = (*itr)->getDirection(isectPos);
 		vec3f diffuse = max(0.0, (i.N * L_i)) * kd;

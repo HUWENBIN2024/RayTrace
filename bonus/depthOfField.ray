@@ -1,7 +1,7 @@
 SBT-raytracer 1.0
 camera
 {
-	position = (0, 0, 3);
+	position = (0, 0, 5);
 	viewdir = (0, 0, -5);
 	updir = (0, 1, 0);
 }
@@ -36,7 +36,7 @@ sphere {
 }))
 
 scale(0.5,
-translate(0.0,0.0,1.0,
+translate(0.0,0.0,-2.0,
 sphere {
 	material = { 
 		diffuse = (1.0, 1.0, 1.0);
@@ -44,7 +44,7 @@ sphere {
 }))
 
 scale(0.5,
-translate(1.0,0.0,-1.0,
+translate(1.0,0.0,-7.0,
 sphere {
 	material = { 
 		diffuse = (1.0, 1.0, 1.0);

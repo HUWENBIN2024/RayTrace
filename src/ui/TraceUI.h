@@ -34,10 +34,13 @@ public:
 	Fl_Slider*			m_DistScaleSlider;
 	Fl_Slider*			m_SubPixelSlider;
 	Fl_Slider*			m_AmbientLightSlider;
-	int					num_Sliders = 8;
+	Fl_Slider*			m_DOFdepthSlider;
+	Fl_Slider*			m_nSampleRaySlider;
+	int					num_Sliders = 10;
 
 	static Fl_Menu_Item	AntialiasingModeMenu[5];
 	Fl_Choice*			m_antialModeChoice;
+	Fl_Light_Button*    m_MC;
 	Fl_Light_Button*    m_glossyReflection;
 	Fl_Light_Button*	m_softShadow;
 	Fl_Light_Button*	m_DOF;
@@ -65,6 +68,9 @@ public:
 	bool		GlossyReflectionIsOn() { return glossyReflectionOn; }
 	bool		SoftShadowIsOn() { return softShadowOn; }
 	bool		DOFisOn() { return DOFOn; }
+	double		getDOFdepth() { return DOFdepth; }
+	bool		MCisOn() { return MCon; }
+	int			getNumSampleRays() { return m_nSampleRays; }
 
 private:
 	RayTracer*	raytracer;
@@ -78,6 +84,9 @@ private:
 	bool		glossyReflectionOn;
 	bool		softShadowOn;
 	bool		DOFOn;
+	double		DOFdepth;
+	bool		MCon;
+	int			m_nSampleRays;
 
 // static class members
 	static Fl_Menu_Item menuitems[];
@@ -99,11 +108,14 @@ private:
 	static void cb_DistScaleSlides(Fl_Widget* o, void* v);
 	static void cb_SubPixelSlides(Fl_Widget* o, void* v);
 	static void cb_AmbientLightSlides(Fl_Widget* o, void* v);
+	static void cb_SampleRaySlides(Fl_Widget* o, void* v);
 
 	static void cb_antialModeChoice(Fl_Widget* o, void* v);
 	static void cb_glossyReflection(Fl_Widget* o, void* v);
 	static void cb_softShadow(Fl_Widget* o, void* v);
 	static void cb_DOF(Fl_Widget* o, void* v);
+	static void cb_DOFdepth(Fl_Widget* o, void* v);
+	static void cb_MC(Fl_Widget* o, void* v);
 
 	static void cb_render(Fl_Widget* o, void* v);
 	static void cb_stop(Fl_Widget* o, void* v);

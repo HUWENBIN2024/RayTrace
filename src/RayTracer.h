@@ -30,8 +30,7 @@ public:
 
 	bool sceneLoaded();
 
-	// TraceUI* m_pUI;
-	int randnum;
+	int* randnum;
 
 private:
 	unsigned char *buffer;

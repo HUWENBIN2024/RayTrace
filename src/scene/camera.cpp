@@ -26,13 +26,30 @@ Camera::rayThrough( double x, double y, ray &r )
     x -= 0.5;
     y -= 0.5;
     vec3f dir = look + x * u + y * v;
-    if (traceUI->DOFisOn()) {
-        int randnum = traceUI->getRayTracer()->randnum;
-        double randx = getDistributedDistance(randnum, 0.03) * cos(getRandomAngle(randnum));
-        double randy = getDistributedDistance(randnum, 0.03) * sin(getRandomAngle(randnum));
-        dir -= vec3f(randx, randy, 0);
-    }
     r = ray( eye, dir.normalize() );
+}
+
+void Camera::DOFrayThrough(double x, double y, ray& r, int index, int gridSize) {
+    double gridLength = 0.2;
+    if (gridSize < 1 || gridSize > 4) {
+        cerr << "Bad grid size index for DOF" << endl;
+        exit(-1);
+    }
+    x -= 0.5;
+    y -= 0.5;
+    vec3f dir = traceUI->getDOFdepth() * (look + x * u + y * v);
+    int xpos = index % gridSize;
+    int ypos = index / gridSize;
+    double cellLength = gridLength / gridSize;
+    vec3f deviation(-gridLength/2+cellLength/2+xpos*cellLength,-gridLength/2+cellLength/2+ypos*cellLength,0);
+    if (traceUI->MCisOn()) {
+        int* randnum = traceUI->getRayTracer()->randnum;
+        double randx = getDistributedDistance(randnum[index], cellLength);
+        double randy = getDistributedDistance(randnum[index + 1], cellLength);
+        deviation += vec3f(randx - cellLength / 2, randy - cellLength / 2, 0);
+    }
+    dir -= deviation;
+    r = ray(eye+deviation, dir.normalize());
 }
 
 void

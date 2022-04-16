@@ -14,7 +14,7 @@
 #include "vecmath/vecmath.h"
 #define  NUMERICAL_ERROR 1.0e-9
 extern TraceUI* traceUI;
-extern int** randnumbers;
+extern int**** randnumbers;
 
 // Trace a top-level ray through normalized window coordinates (x,y)
 // through the projection plane, and out into the scene.  All we do is
@@ -22,9 +22,21 @@ extern int** randnumbers;
 // in an initial ray weight of (0.0,0.0,0.0) and an initial recursion depth of 0.
 vec3f RayTracer::trace( Scene *scene, double x, double y )
 {
-    ray r( vec3f(0,0,0), vec3f(0,0,0) );
-    scene->getCamera()->rayThrough( x,y,r );
-	return traceRay( scene, r, vec3f(1.0,1.0,1.0), 0 ).clamp();
+	if (traceUI->DOFisOn()) {
+		vec3f result(0, 0, 0);
+		int t = traceUI->getNumSampleRays();
+		for (int i = 0; i < t*t; ++i) {
+			ray r;
+			scene->getCamera()->DOFrayThrough(x, y, r, i, t);
+			result += traceRay(scene, r, vec3f(1.0, 1.0, 1.0), 0).clamp() / (t*t);
+		}
+		return result;
+	}
+	else {
+		ray r(vec3f(0, 0, 0), vec3f(0, 0, 0));
+		scene->getCamera()->rayThrough(x, y, r);
+		return traceRay(scene, r, vec3f(1.0, 1.0, 1.0), 0).clamp();
+	}
 }
 
 // Do recursive ray tracing!  You'll want to insert a lot of code here
@@ -66,21 +78,26 @@ vec3f RayTracer::traceRay( Scene *scene, const ray& r,
 				if (traceUI->GlossyReflectionIsOn()) { // Glossy Reflection BW14
 					// compute reflect_dir according to some distribution. apply monte carlo
 					vec3f reflect_dir_c = (I - 2 * (I * N) * N).normalize(); // c means center
-					vec3f perp(0, 0, 0);
+					vec3f perp;
 					if (reflect_dir_c[0] != 0) { perp[0] = (-reflect_dir_c[1] - reflect_dir_c[2]) / reflect_dir_c[0]; perp[1] = 1; perp[2] = 1; }
 					else if (reflect_dir_c[1] != 0) { perp[1] = (-reflect_dir_c[0] - reflect_dir_c[2]) / reflect_dir_c[1]; perp[0] = 1; perp[2] = 1; }
 					else if (reflect_dir_c[2] != 0) { perp[2] = (-reflect_dir_c[1] - reflect_dir_c[0]) / reflect_dir_c[2]; perp[1] = 1; perp[0] = 1; }
 					else { cerr << "reflect direction vector is zero vector" << endl; }
-					reflect_dir = reflect_dir_c + perp.normalize() * getDistributedDistance(randnum, 0.03);
-					mat4f random_rotate = mat4f::rotate(reflect_dir_c, getRandomAngle(randnum));
-					reflect_dir = reflect_dir.normalize();
-					reflect_dir = random_rotate * reflect_dir;
+					int t = pow(traceUI->getNumSampleRays(),2);
+					for (int i = 0; i < t; ++i) {
+						reflect_dir = reflect_dir_c + perp.normalize() * getDistributedDistance(randnum[i], 0.03);
+						mat4f random_rotate = mat4f::rotate(reflect_dir_c, getRandomAngle(randnum[i+1]));
+						reflect_dir = reflect_dir.normalize();
+						reflect_dir = random_rotate * reflect_dir;
+						ray reflect_ray(next_ray_position, reflect_dir);
+						I_result += prod(m.kr, traceRay(scene, reflect_ray, thresh, depth + 1, isInObj)) / t;
+					}
 				}
 				else {
 					reflect_dir = (I - 2 * (I * N) * N).normalize();
+					ray reflect_ray(next_ray_position, reflect_dir);
+					I_result += prod(m.kr, traceRay(scene, reflect_ray, thresh, depth + 1, isInObj));
 				}
-				ray reflect_ray(next_ray_position, reflect_dir);
-				I_result += prod(m.kr, traceRay(scene, reflect_ray, thresh, depth + 1, isInObj));
 			}
 
 			// refraction
@@ -224,7 +241,7 @@ void RayTracer::traceLines( int start, int stop )
 
 void RayTracer::tracePixel( int i, int j , vec3f** RRAS)
 {
-	randnum = randnumbers[j][i];
+	randnum = randnumbers[j][i][0];
 	vec3f col(0,0,0);
 
 	if( !scene )
@@ -252,6 +269,7 @@ void RayTracer::tracePixel( int i, int j , vec3f** RRAS)
 		}
 		for (int j = 0; j < numSubPixels; ++j) {
 			for (int i = 0; i < numSubPixels; ++i) {
+				randnum = randnumbers[j][i][j * numSubPixels + i];
 				col += trace(scene, x[i], y[j]) / pow(numSubPixels, 2);
 			}
 		}
@@ -267,6 +285,7 @@ void RayTracer::tracePixel( int i, int j , vec3f** RRAS)
 			for (int i = 0; i < numSubPixels; ++i) {
 				double xi = x0 + (i + double(rand() % 500) / 500) * xdelta;
 				double yj = y0 + (j + double(rand() % 500) / 500) * ydelta;
+				randnum = randnumbers[j][i][j * numSubPixels + i];
 				col += trace(scene, xi, yj);
 			}
 		}
