@@ -265,6 +265,7 @@ public:
 
 	bool intersect( const ray& r, isect& i ) const;
 	void initScene();
+	bool willIntersectOpaqueObject(const ray& r, isect& i) const;
 
 	list<Light*>::const_iterator beginLights() const { return lights.begin(); }
 	list<Light*>::const_iterator endLights() const { return lights.end(); }

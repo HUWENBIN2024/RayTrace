@@ -8,6 +8,10 @@
 #include <cmath>
 #include <algorithm>
 
+// global helper functions
+double getRandomAngle(int randnum); // get random angle (in rad) from 0 to 2pi
+double getDistributedDistance(int randnum, double max); // get random distance value from 0 to +inf according to some distribution
+
 using namespace std;
 
 class vec3f;
