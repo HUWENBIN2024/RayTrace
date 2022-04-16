@@ -116,6 +116,10 @@ void TraceUI::cb_SubPixelSlides(Fl_Widget* o, void* v)
 {
 	((TraceUI*)(o->user_data()))->m_nSubPixels = int(((Fl_Slider*)o)->value());
 }
+void TraceUI::cb_Threshold(Fl_Widget* o, void* v)
+{
+	((TraceUI*)(o->user_data()))->m_nThreshold = int(((Fl_Slider*)o)->value());   // call back funciton for threshold
+}
 
 void TraceUI::cb_antialModeChoice(Fl_Widget* o, void* v)
 {
@@ -256,6 +260,7 @@ TraceUI::TraceUI() {
 	m_nDACoeff[0] = 1; m_nDACoeff[1] = 0; m_nDACoeff[2] = 0;
 	m_nDistScale = 1;
 	m_nSubPixels = 1;
+	m_nThreshold = 0;
 	m_mainWindow = new Fl_Window(100, 40, 400, 500, "Ray <Not Loaded>");
 		m_mainWindow->user_data((void*)(this));	// record self to be used by static callback functions
 		// install menu bar
@@ -270,6 +275,7 @@ TraceUI::TraceUI() {
 		installSlider(m_quaDASlider, 5, "quadratic attenuation coefficient", 0, 1, 0.01, m_nDACoeff[2], cb_quaDASlides);
 		installSlider(m_DistScaleSlider, 6, "distance scale factor (log10)", -4, 1, 0.01, m_nDistScale, cb_DistScaleSlides);
 		installSlider(m_SubPixelSlider, 7, "Sub-Pixel Samples", 1, 5, 1, m_nSubPixels, cb_SubPixelSlides);
+		installSlider(m_Termination, 8, "threshold", 0, 1.0, 0.01, m_nThreshold, cb_Threshold);
 
 		//Install Choices and Buttons
 		installChoice(m_antialModeChoice, 1, "Antialiasing Mode", AntialiasingModeMenu, cb_antialModeChoice);
@@ -307,7 +313,7 @@ void TraceUI::installSlider(Fl_Slider* &Slider, int indx, const char* name, doub
 }
 
 void TraceUI::installChoice(Fl_Choice* &Choice, int indx, const char* name, Fl_Menu_Item* menu, void (*cb)(Fl_Widget*, void*)) {
-	Choice = new Fl_Choice(130+190*((indx-1)%2), 25*num_Sliders+30+25*((indx-indx%2)/2), 60, 20, name); // 一行俩按钮
+	Choice = new Fl_Choice(130+190*((indx-1)%2), 25*num_Sliders+60+25*((indx-indx%2)/2), 60, 20, name); // 一行俩按钮
 	Choice->user_data((void*)(this));	 // record self to be used by static callback functions
 	Choice->menu(menu);
 	Choice->callback(cb);
