@@ -42,7 +42,7 @@ vec3f RayTracer::trace( Scene *scene, double x, double y )
 // Do recursive ray tracing!  You'll want to insert a lot of code here
 // (or places called from here) to handle reflection, refraction, etc etc.
 vec3f RayTracer::traceRay( Scene *scene, const ray& r, 
-	const vec3f& thresh, int depth, bool isInObj )
+	const vec3f& thresh, int depth, bool isInObj, double intensity )
 {
 	isect i;
 
@@ -64,7 +64,7 @@ vec3f RayTracer::traceRay( Scene *scene, const ray& r,
 		I_result += m.shade(scene, r, i);
     
 		// recursion for reflection and refraction
-		if (depth < traceUI->getDepth())
+		if (depth < traceUI->getDepth() && (traceUI->m_Termination->value() < intensity || traceUI->m_Termination->value() == 0 ))
 		{
 			vec3f next_ray_position = r.at(i.t);
 			vec3f I = r.getDirection().normalize();
@@ -114,7 +114,7 @@ vec3f RayTracer::traceRay( Scene *scene, const ray& r,
 				{
 					vec3f transmission_ray_dir = (index_ratio * N * L - sqrt(discriminant)) * N - index_ratio * L;
 					ray transmission_ray(next_ray_position, transmission_ray_dir);
-					I_result += prod(m.kt, traceRay(scene, transmission_ray, thresh, depth + 1, !isInObj));
+					I_result += prod(m.kt, traceRay(scene, transmission_ray, thresh, depth + 1, !isInObj, (m.kt[0] + m.kt[1] + m.kt[2]) / 3 * intensity));
 				}
 			}
 

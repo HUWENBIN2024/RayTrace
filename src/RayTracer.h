@@ -16,7 +16,7 @@ public:
     ~RayTracer();
 
     vec3f trace( Scene *scene, double x, double y );
-	vec3f traceRay( Scene *scene, const ray& r, const vec3f& thresh, int depth, bool isInObj = false );
+	vec3f traceRay( Scene *scene, const ray& r, const vec3f& thresh, int depth, bool isInObj = false, double intensity = 1.0 );
 
 	void setAalmode(int mode) { aalmode = static_cast<AntialiasingMode>(mode); }
 

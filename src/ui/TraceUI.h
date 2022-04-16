@@ -33,10 +33,11 @@ public:
 	Fl_Slider*			m_quaDASlider;
 	Fl_Slider*			m_DistScaleSlider;
 	Fl_Slider*			m_SubPixelSlider;
+	Fl_Slider*			m_Termination;
 	Fl_Slider*			m_AmbientLightSlider;
 	Fl_Slider*			m_DOFdepthSlider;
 	Fl_Slider*			m_nSampleRaySlider;
-	int					num_Sliders = 10;
+	int					num_Sliders = 11;
 
 	static Fl_Menu_Item	AntialiasingModeMenu[5];
 	Fl_Choice*			m_antialModeChoice;
@@ -64,6 +65,7 @@ public:
 	double*		getDACoeff() {return m_nDACoeff;}
 	double		getDistScale() { return m_nDistScale; }
 	int			getSubPixels() { return m_nSubPixels; }
+	double      getThreshold() { return m_nThreshold; }
 	vec3f		getAmbientLight() { return vec3f(m_nAmbientLight, m_nAmbientLight, m_nAmbientLight); } // Fix same value for 3 channels for simplicity
 	bool		GlossyReflectionIsOn() { return glossyReflectionOn; }
 	bool		SoftShadowIsOn() { return softShadowOn; }
@@ -80,6 +82,7 @@ private:
 	double		m_nDACoeff[3];
 	double		m_nDistScale;
 	int			m_nSubPixels;
+	double		m_nThreshold;
 	double		m_nAmbientLight;
 	bool		glossyReflectionOn;
 	bool		softShadowOn;
@@ -107,6 +110,7 @@ private:
 	static void cb_quaDASlides(Fl_Widget* o, void* v);
 	static void cb_DistScaleSlides(Fl_Widget* o, void* v);
 	static void cb_SubPixelSlides(Fl_Widget* o, void* v);
+	static void cb_Threshold(Fl_Widget* o, void* v);
 	static void cb_AmbientLightSlides(Fl_Widget* o, void* v);
 	static void cb_SampleRaySlides(Fl_Widget* o, void* v);
 
