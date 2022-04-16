@@ -62,7 +62,7 @@ vec3f RayTracer::traceRay( Scene *scene, const ray& r,
 		// Shading
 		const Material& m = i.getMaterial();
 		I_result += m.shade(scene, r, i);
-
+    
 		// recursion for reflection and refraction
 		if (depth < traceUI->getDepth())
 		{
@@ -130,6 +130,7 @@ vec3f RayTracer::traceRay( Scene *scene, const ray& r,
 		return vec3f( 0.0, 0.0, 0.0 );
 	}
 }
+
 
 
 RayTracer::RayTracer()
