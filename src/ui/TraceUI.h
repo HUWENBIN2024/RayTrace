@@ -33,10 +33,17 @@ public:
 	Fl_Slider*			m_quaDASlider;
 	Fl_Slider*			m_DistScaleSlider;
 	Fl_Slider*			m_SubPixelSlider;
-	int					num_Sliders = 7;
+	Fl_Slider*			m_AmbientLightSlider;
+	Fl_Slider*			m_DOFdepthSlider;
+	Fl_Slider*			m_nSampleRaySlider;
+	int					num_Sliders = 10;
 
 	static Fl_Menu_Item	AntialiasingModeMenu[5];
 	Fl_Choice*			m_antialModeChoice;
+	Fl_Light_Button*    m_MC;
+	Fl_Light_Button*    m_glossyReflection;
+	Fl_Light_Button*	m_softShadow;
+	Fl_Light_Button*	m_DOF;
 
 	Fl_Button*			m_renderButton;
 	Fl_Button*			m_stopButton;
@@ -47,14 +54,23 @@ public:
 	void show();
 	void installSlider(Fl_Slider* &slider, int indx, const char* name, double Min, double Max, double step, double initval, void (*cb)(Fl_Widget*, void*));
 	void installChoice(Fl_Choice* &Choice, int indx, const char* name, Fl_Menu_Item* menu, void (*cb)(Fl_Widget*, void*));
+	void installLightButton(Fl_Light_Button*& Button, int indx, const char* name, void (*cb)(Fl_Widget*, void*));
 
 	void		setRayTracer(RayTracer *tracer);
+	RayTracer*  getRayTracer() { return raytracer; }
 
 	int			getSize();
 	int			getDepth();
 	double*		getDACoeff() {return m_nDACoeff;}
 	double		getDistScale() { return m_nDistScale; }
 	int			getSubPixels() { return m_nSubPixels; }
+	vec3f		getAmbientLight() { return vec3f(m_nAmbientLight, m_nAmbientLight, m_nAmbientLight); } // Fix same value for 3 channels for simplicity
+	bool		GlossyReflectionIsOn() { return glossyReflectionOn; }
+	bool		SoftShadowIsOn() { return softShadowOn; }
+	bool		DOFisOn() { return DOFOn; }
+	double		getDOFdepth() { return DOFdepth; }
+	bool		MCisOn() { return MCon; }
+	int			getNumSampleRays() { return m_nSampleRays; }
 
 private:
 	RayTracer*	raytracer;
@@ -64,6 +80,13 @@ private:
 	double		m_nDACoeff[3];
 	double		m_nDistScale;
 	int			m_nSubPixels;
+	double		m_nAmbientLight;
+	bool		glossyReflectionOn;
+	bool		softShadowOn;
+	bool		DOFOn;
+	double		DOFdepth;
+	bool		MCon;
+	int			m_nSampleRays;
 
 // static class members
 	static Fl_Menu_Item menuitems[];
@@ -84,8 +107,15 @@ private:
 	static void cb_quaDASlides(Fl_Widget* o, void* v);
 	static void cb_DistScaleSlides(Fl_Widget* o, void* v);
 	static void cb_SubPixelSlides(Fl_Widget* o, void* v);
+	static void cb_AmbientLightSlides(Fl_Widget* o, void* v);
+	static void cb_SampleRaySlides(Fl_Widget* o, void* v);
 
 	static void cb_antialModeChoice(Fl_Widget* o, void* v);
+	static void cb_glossyReflection(Fl_Widget* o, void* v);
+	static void cb_softShadow(Fl_Widget* o, void* v);
+	static void cb_DOF(Fl_Widget* o, void* v);
+	static void cb_DOFdepth(Fl_Widget* o, void* v);
+	static void cb_MC(Fl_Widget* o, void* v);
 
 	static void cb_render(Fl_Widget* o, void* v);
 	static void cb_stop(Fl_Widget* o, void* v);

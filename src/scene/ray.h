@@ -17,6 +17,7 @@ class SceneObject;
 
 class ray {
 public:
+    ray() : p(vec3f(0, 0, 0)), d(vec3f(0, 0, 0)) {}
 	ray( const vec3f& pp, const vec3f& dd )
 		: p( pp ), d( dd ) {}
 	ray( const ray& other ) 
