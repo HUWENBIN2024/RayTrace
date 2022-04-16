@@ -173,6 +173,20 @@ void TraceUI::cb_MC(Fl_Widget* o, void* v)
 	else pUI->MCon = true;
 }
 
+void TraceUI::cb_Bg(Fl_Widget* o, void* v)
+{
+	TraceUI* pUI = ((TraceUI*)(o->user_data()));
+	if (pUI->BgOn == true) {
+		pUI->BgOn = false;
+	}
+	else {
+		pUI->BgOn = true;
+		// Set Bg Images
+		string directory = fl_dir_chooser("Select a directory", NULL);
+		traceUI->raytracer->setBg(directory+"/");
+	}
+}
+
 void TraceUI::cb_render(Fl_Widget* o, void* v)
 {
 	char buffer[256];
@@ -356,7 +370,8 @@ TraceUI::TraceUI() {
 	softShadowOn = false;
 	DOFOn = false;
 	DOFdepth = 1;
-	MCon = false;
+	MCon = true;
+	BgOn = false;
 	m_nSampleRays = 4;
 	m_mainWindow = new Fl_Window(100, 40, 400, 500, "Ray <Not Loaded>");
 		m_mainWindow->user_data((void*)(this));	// record self to be used by static callback functions
@@ -367,9 +382,9 @@ TraceUI::TraceUI() {
 		// Install Sliders
 		installSlider(m_depthSlider, 1, "Depth", 0, 10, 1, m_nDepth, cb_depthSlides);
 		installSlider(m_sizeSlider, 2, "Size", 64, 512, 1, m_nSize, cb_sizeSlides);
-		installSlider(m_conDASlider, 3, "constant attenuation coefficient", 0, 1, 0.01, m_nDACoeff[0], cb_conDASlides);
-		installSlider(m_linDASlider, 4, "linear attenuation coefficient", 0, 1, 0.01, m_nDACoeff[1], cb_linDASlides);
-		installSlider(m_quaDASlider, 5, "quadratic attenuation coefficient", 0, 1, 0.01, m_nDACoeff[2], cb_quaDASlides);
+		installSlider(m_conDASlider, 3, "Attenuation-Constant", 0, 1, 0.01, m_nDACoeff[0], cb_conDASlides);
+		installSlider(m_linDASlider, 4, "Attenuation-Linear", 0, 1, 0.01, m_nDACoeff[1], cb_linDASlides);
+		installSlider(m_quaDASlider, 5, "Attenuation-Quadratic", 0, 1, 0.01, m_nDACoeff[2], cb_quaDASlides);
 		installSlider(m_DistScaleSlider, 6, "distance scale factor (log10)", -4, 1, 0.01, m_nDistScale, cb_DistScaleSlides);
 		installSlider(m_SubPixelSlider, 7, "Sub-Pixel Samples", 1, 5, 1, m_nSubPixels, cb_SubPixelSlides);
 		installSlider(m_Termination, 8, "threshold", 0, 1.0, 0.01, m_nThreshold, cb_Threshold);
@@ -379,10 +394,10 @@ TraceUI::TraceUI() {
 
 		//Install Choices and Buttons
 		installChoice(m_antialModeChoice, 1, "Antialiasing Mode", AntialiasingModeMenu, cb_antialModeChoice);
-		installLightButton(m_MC, 2, "Monte Carlo", cb_MC);
-		installLightButton(m_glossyReflection, 3, "Glossy Reflection", cb_glossyReflection);
-		installLightButton(m_softShadow, 4, "Soft Shadow", cb_softShadow);
-		installLightButton(m_DOF, 5, "Depth of Field", cb_DOF);
+		installLightButton(m_glossyReflection, 2, "Glossy Reflection", cb_glossyReflection);
+		installLightButton(m_softShadow, 3, "Soft Shadow", cb_softShadow);
+		installLightButton(m_DOF, 4, "Depth of Field", cb_DOF);
+		installLightButton(m_Bg, 6, "Background Image Box", cb_Bg);
 
 		m_renderButton = new Fl_Button(240, 27, 70, 25, "&Render");
 		m_renderButton->user_data((void*)(this));

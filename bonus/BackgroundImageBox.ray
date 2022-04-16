@@ -1,0 +1,15 @@
+SBT-raytracer 1.0
+camera
+{
+	position = (5, 0, 0);
+	viewdir = (-5, 0, 0);
+	updir = (0, 0, 1);
+}
+
+scale(1.5,
+sphere {
+	material = { 
+		diffuse = (0.0, 0.0, 0.0);
+		specular = (1.0, 1.0, 1.0);
+	}
+})

@@ -12,6 +12,7 @@
 #include "fileio/parse.h"
 #include "ui/TraceUI.h"
 #include "vecmath/vecmath.h"
+#include "fileio/bitmap.h"
 #define  NUMERICAL_ERROR 1.0e-9
 extern TraceUI* traceUI;
 extern int**** randnumbers;
@@ -123,11 +124,53 @@ vec3f RayTracer::traceRay( Scene *scene, const ray& r,
 		return I_result;
 	
 	} else {
-		// No intersection.  This ray travels to infinity, so we color
-		// it according to the background color, which in this (simple) case
-		// is just black.
-
-		return vec3f( 0.0, 0.0, 0.0 );
+		if (traceUI->BGisOn()) {
+			unsigned char* bg;
+			double x = r.getDirection()[0], y = r.getDirection()[1], z = r.getDirection()[2];
+			double xn, yn;
+			if (abs(z) >= abs(x) && abs(z) >= abs(y)) {
+				if (z > 0) {
+					bg = bgBox[0];
+					xn = (-x / abs(z)) / 2 + 0.5;
+					yn = (y / abs(z)) / 2 + 0.5;
+				}
+				else {
+					bg = bgBox[1];
+					xn = (-x / abs(z)) / 2 + 0.5;
+					yn = (-y / abs(z)) / 2 + 0.5;
+				}
+			}
+			if (abs(x) >= abs(y) && abs(x) >= abs(z)) {
+				if (x > 0) {
+					bg = bgBox[2];
+					xn = (-y / abs(x)) / 2 + 0.5;
+					yn = (z / abs(x)) / 2 + 0.5;
+				}
+				else {
+					bg = bgBox[3];
+					xn = (y / abs(x)) / 2 + 0.5;
+					yn = (z / abs(x)) / 2 + 0.5;
+				}
+			}
+			if (abs(y) >= abs(x) && abs(y) >= abs(z)) {
+				if (y > 0) {
+					bg = bgBox[5];
+					xn = (x / abs(y)) / 2 + 0.5;
+					yn = (z / abs(y)) / 2 + 0.5;
+				}
+				else {
+					bg = bgBox[4];
+					xn = (-x / abs(y)) / 2 + 0.5;
+					yn = (z / abs(y)) / 2 + 0.5;
+				}
+			}
+			int xc = int(xn * bgSize), yc = int(yn * bgSize);
+			int indx = 3 * (min(yc,bgSize-1) * bgSize + min(xc,bgSize-1));
+			return vec3f(double(bg[indx]) / 255, double(bg[indx + 1]) / 255, double(bg[indx + 2]) / 255);
+		}
+		else {
+			return vec3f(0, 0, 0);
+		}
 	}
 }
 
@@ -360,5 +403,15 @@ vec3f RayTracer::traceSubPixel(vec3f* c, double* coords, int& depth) { // coords
 		}
 		result /= 4;
 		return result;
+	}
+}
+
+void RayTracer::setBg(string dir) {
+	string files[6] = { dir + "up.bmp",dir + "down.bmp",dir + "left.bmp",dir + "right.bmp",dir + "front.bmp",dir + "back.bmp" };
+	for (int i = 0; i < 6; ++i) {
+		const char* fname = files[i].data();
+		int width; int height;
+		bgBox[i] = readBMP(fname, width, height);
+		bgSize = width;
 	}
 }

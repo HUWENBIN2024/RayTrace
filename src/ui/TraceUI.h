@@ -15,6 +15,7 @@
 #include <FL/Fl_Button.H>
 
 #include <FL/fl_file_chooser.H>		// FLTK file chooser
+#include <FL/Fl_Native_File_Chooser.H>
 
 #include "TraceGLWindow.h"
 
@@ -45,6 +46,7 @@ public:
 	Fl_Light_Button*    m_glossyReflection;
 	Fl_Light_Button*	m_softShadow;
 	Fl_Light_Button*	m_DOF;
+	Fl_Light_Button*	m_Bg;
 
 	Fl_Button*			m_renderButton;
 	Fl_Button*			m_stopButton;
@@ -73,6 +75,7 @@ public:
 	double		getDOFdepth() { return DOFdepth; }
 	bool		MCisOn() { return MCon; }
 	int			getNumSampleRays() { return m_nSampleRays; }
+	bool		BGisOn() { return BgOn; }
 
 private:
 	RayTracer*	raytracer;
@@ -90,6 +93,7 @@ private:
 	double		DOFdepth;
 	bool		MCon;
 	int			m_nSampleRays;
+	bool		BgOn;
 
 // static class members
 	static Fl_Menu_Item menuitems[];
@@ -120,6 +124,7 @@ private:
 	static void cb_DOF(Fl_Widget* o, void* v);
 	static void cb_DOFdepth(Fl_Widget* o, void* v);
 	static void cb_MC(Fl_Widget* o, void* v);
+	static void cb_Bg(Fl_Widget* o, void* v);
 
 	static void cb_render(Fl_Widget* o, void* v);
 	static void cb_stop(Fl_Widget* o, void* v);

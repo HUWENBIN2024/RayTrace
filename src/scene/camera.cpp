@@ -15,7 +15,7 @@ Camera::Camera()
     eye = vec3f(0,0,0);
     u = vec3f( 1,0,0 );
     v = vec3f( 0,1,0 );
-    look = vec3f( 0,0,-1 );
+    look = traceUI->BGisOn() ? vec3f(0, 0, -0.5) : vec3f(0, 0, -1);
 }
 
 void
