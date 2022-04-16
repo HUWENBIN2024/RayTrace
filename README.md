@@ -2,13 +2,13 @@
 
 ## Basic Requirement:
 
-0. Ray Tracing 框架; Recursion Depth Control
-1. Ray Box Intersection
+0. Ray Tracing 框架; Recursion Depth Control 完成
+1. Ray Box Intersection 完成
 2. Phong Shading Model 完成
 3. Distance Attenuation 完成
 4. Shadow Attenuation 完成
-5. Reflection
-6. Refraction
+5. Reflection 完成
+6. Refraction 完成
 
 ----------------------------------------------------------------------------
 
@@ -17,9 +17,9 @@
 ----------------------------------------------------------------------------
 
 ### UST COMP4411
-
-1. [W] Adaptive Termination Condition Based on Ray Contribution H
-
+ 
+1. [W] Adaptive Termination Condition Based on Ray Contribution H 完成
+ 
 2. [W+W] Antialiasing by Supersampling and Averaging Down; +Jittering 完成
 
 3. [B] Spot Light 聚光灯
