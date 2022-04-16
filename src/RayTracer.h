@@ -27,6 +27,7 @@ public:
 	void tracePixel( int i, int j ,vec3f** RRAS);
 
 	bool loadScene( char* fn );
+	void setBg(string dir);
 
 	bool sceneLoaded();
 
@@ -38,6 +39,8 @@ private:
 	int bufferSize;
 	Scene *scene;
 	AntialiasingMode aalmode;
+	unsigned char* bgBox[6] = { nullptr }; // up, down, left, right, front, back
+	int bgSize;
 	vec3f traceSubPixel(vec3f* color_of_4_corners, double* coords, int &depth); // For Adaptive Supersampling
 
 	bool m_bSceneLoaded;

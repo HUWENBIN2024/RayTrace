@@ -1,0 +1,52 @@
+Trace Bells and Whistles Checklist for Grading
+(submit ONLY if you have implemented any B&Ws in the following)
+
+HKUST login(s): whuak@connect.ust.hk	hjiangav@connect.ust.hk
+
+Delete yes/no when appropriate
+
+W adaptive termination					yes
+W antialiasing by supersampling				yes
++W jittering							yes
+B spot lights							no
+B background image						yes
++B? background image box (please see below)		yes
+B accelerate shadow atteuation				no
+B overlapping tranparent objects				no
+BW texture mapping (diffuse and transparent)	no
+BW antialiasing by adaptive supersampling		yes
+BW Warn model							no
+2B bump mapping							no
+2B solid/procedural texture					no
+2B new geometry (quadrics)					no
+2B height fields							no
+2B DoF 								yes
+1.5B soft shadows 						yes
+1.5B glossy reflection					yes
+3B high lever geometry (e.g. metaballs)		no
+3B ray-intersection optimization				no
+4B realistic shading model					no
+4B CSG								no
+4B caustics							no
+
+Instructions on using our program to see the BW:
+Our sliders and buttons may not be completely arranged in order. Please see below for more information.
+
+1. Adaptive Termination: Please use the "threshold" slider to control the adaptive termination. (If value of the threshold is 0, there no adaptive termication)
+2. Supersampling: Please change 'Antialiasing Mode' to 'Supersampling(BW2)', and use 'number of subpixels' slider to control the number of subpixels.
+3. Jittering: Please change 'Antialiasing Mode' to 'Jittering(BW2)', and use 'number of subpixels' slider to control the number of subpixels.
+			The noise can be noticed on object boundaries if number of subpixels is set to 1.
+4. Background Image: I implemented more than what's described in the course website. In fact, I implemented 'background image box' of University of Washington's
+			2021 Fall version of their CG course CSE457. This bonus is worth 2 bells there, so I would also like to apply for 2 Bells for my implementation
+			in our project. To see this effect, please first click on 'Background Image Box' button and choose 'GoldenGate' DIRECTORY (NOT FILE) in ./bonus .
+			Then, load 'BackgroundImageBox.ray' from ./bonus, set depth to 2 or more, and then render. You can see the 'front background' as the background,
+			and 'other direction of background images' on the reflected sphere.
+			For more information, please refer to UW's course website: courses.cs.washington.edu/courses/cse457/21au/src/trace/trace.php#bells
+5. Adaptive Supersampling: Please change 'Antialiasing Mode' to 'Adaptive(BW8)'. This works as fast as Supersampling with 2/3 subpixels but its effect is better.
+6. Please turn on the related buttons to see the effect. To reduce noise, you may switch antialiasing mode to 'Jittering' (Then it's Monte Carlo Path
+			Tracing here).
+	6.1. DoF: You can test it using ./bonus/depthOfField.ray . You are suggested to adjust "DOF Focus Depth" to 3.3, 5.8 or 8.7 to see good effects.
+	6.2. Soft Shadows: You can test it using ./bonus/softShadows.ray .
+	6.3. Glossy Reflection: You can test it using ./bonus/glossyReflection.ray .
+
+RayTracing requires time, and we did not implement accelaration, so please be patient to wait for the effects! Thank you for your time!
