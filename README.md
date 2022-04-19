@@ -1,12 +1,12 @@
 # RayTrace
 
 ## 项目描述：
-**Trace是一个在简单的场景种构造递归光线跟踪图像的程序。它在功能上类似于POV-Ray射线追踪器
+**Trace是一个在简单的场景种构造递归光线跟踪图像的程序。它在功能上类似于POV-Ray射线追踪器**
 
-## 项目来源：
-···
+## 项目来源：(CSE 457 in University of Washington)
+```
 https://courses.cs.washington.edu/courses/cse457/21au/src/trace/trace.php
-···
+```
 
 ## Basic Requirement:  
 0. Ray Tracing 框架; Recursion Depth Control 完成
